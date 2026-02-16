@@ -1,31 +1,47 @@
 # SQL Practice Platform
 
+Open-source, browser-based SQL practice with two career tracks: **Data Analyst** and **Data Engineer**. Powered by DuckDB-WASM — zero setup, runs entirely in the browser.
+
+## Vision & Roadmap
+
+IMPORTANT: Before creating any exercise, read @plan.md for the global vision and the relevant track roadmap:
+- @roadmap/data_analyst.md — ~80 exercises, analytics patterns, business metrics
+- @roadmap/data_engineer.md — ~85 exercises, schema design, pipeline SQL, optimization
+
+Every exercise belongs to a **track** (DA, DE, or shared), a **module** (e.g., I3 = Intermediate Window Functions: Ranking), and a **business domain** (e-commerce, SaaS, marketing, product analytics, finance, data platform, HR).
+
 ## Architecture
+
 - Next.js 14 App Router, TypeScript strict, pnpm
-- DuckDB-WASM (browser-only, 'use client')
+- DuckDB-WASM (browser-only, always `'use client'`)
 - CodeMirror 6 for SQL editing
-- TanStack Table for results display
+- TanStack Table + TanStack React Virtual for results
 - shadcn/ui + Tailwind for UI
-- Zustand for state management
+- Zustand for state management (progress persisted to localStorage)
 - Vitest for testing
 
-## Conventions
-- TypeScript strict: no `any`, no `as` casts without justification
-- Components: one component per file, named export
-- Exercises: each in src/exercises/{id}/ with exercise.ts + exercise.test.ts
-- All SQL schemas use DuckDB-compatible syntax
-- Conventional commits: `<type>(<scope>): <description>`
+## Key Directories
 
-## File Structure
-- src/lib/db/ — DuckDB initialization, query runner, validator
-- src/lib/exercises/ — types, registry
-- src/lib/store/ — Zustand stores
-- src/exercises/ — exercise definitions and tests
-- src/components/ — React components
-- src/app/ — Next.js pages
+- `src/exercises/{id}/` — exercise.ts + exercise.test.ts (ID format: `{number}-{slug}`)
+- `src/lib/db/` — DuckDB init, query runner, validator
+- `src/lib/exercises/` — types.ts (Exercise, TestCase, QueryResult), index.ts (registry)
+- `src/lib/store/` — Zustand stores (progress, exercise-session)
+- `src/components/` — React components (one per file, named export)
+- `src/app/` — Next.js pages (home, exercise/[id])
 
 ## Commands
-- `pnpm dev` — development server
-- `pnpm test` — run vitest
+
+- `pnpm dev` — development server (port 3000)
+- `pnpm test` — run vitest (watch mode)
+- `pnpm test:run` — run vitest (single run, CI)
 - `pnpm lint` — eslint
 - `pnpm build` — production build
+
+## Conventions
+
+- TypeScript strict: no `any`, no `as` casts without justification
+- Conventional commits: `<type>(<scope>): <description>`
+- DuckDB-compatible SQL only (no PostgreSQL/MySQL-specific syntax)
+- YOU MUST frame exercises as real business questions, never abstract syntax drills
+- YOU MUST include 2+ test cases per exercise (default + edge case minimum)
+- All INSERT values must be deterministic (no random data, no NOW())

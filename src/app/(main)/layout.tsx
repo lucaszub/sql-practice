@@ -20,7 +20,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               Exercises
             </Link>
             <Link href="/roadmap/data-analyst" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              Roadmap
+              DA Roadmap
+            </Link>
+            <Link href="/roadmap/data-engineer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              DE Roadmap
             </Link>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggle}>
               {theme === "dark" ? (

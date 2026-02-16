@@ -36,6 +36,20 @@ import { exercise as ex33 } from "@/exercises/33-coalesce-defaults/exercise";
 import { exercise as ex34 } from "@/exercises/34-case-when-basics/exercise";
 import { exercise as ex35 } from "@/exercises/35-case-with-aggregation/exercise";
 import { exercise as ex36 } from "@/exercises/36-null-case-combined/exercise";
+import { exercise as ex37 } from "@/exercises/37-three-table-order-report/exercise";
+import { exercise as ex38 } from "@/exercises/38-self-join-employee-managers/exercise";
+import { exercise as ex39 } from "@/exercises/39-multi-table-revenue-by-category/exercise";
+import { exercise as ex40 } from "@/exercises/40-cross-join-inventory-gaps/exercise";
+import { exercise as ex41 } from "@/exercises/41-self-join-price-comparison/exercise";
+import { exercise as ex42 } from "@/exercises/42-multi-table-top-performers/exercise";
+import { exercise as ex43 } from "@/exercises/43-ecommerce-order-pipeline/exercise";
+import { exercise as ex44 } from "@/exercises/44-scalar-subquery-above-avg/exercise";
+import { exercise as ex45 } from "@/exercises/45-correlated-subquery-latest-order/exercise";
+import { exercise as ex46 } from "@/exercises/46-cte-revenue-breakdown/exercise";
+import { exercise as ex47 } from "@/exercises/47-multi-cte-customer-segmentation/exercise";
+import { exercise as ex48 } from "@/exercises/48-exists-never-ordered/exercise";
+import { exercise as ex49 } from "@/exercises/49-nested-ctes-mom-growth/exercise";
+import { exercise as ex50 } from "@/exercises/50-saas-kpi-dashboard/exercise";
 
 export const exercises: Exercise[] = [
   ex01, ex02, ex03, ex04, ex05,
@@ -45,7 +59,9 @@ export const exercises: Exercise[] = [
   ex21, ex22, ex23, ex24, ex25,
   ex26, ex27, ex28, ex29, ex30,
   ex31, ex32, ex33, ex34, ex35,
-  ex36,
+  ex36, ex37, ex38, ex39, ex40,
+  ex41, ex42, ex43, ex44, ex45,
+  ex46, ex47, ex48, ex49, ex50,
 ];
 
 export function getExercise(id: string): Exercise | undefined {

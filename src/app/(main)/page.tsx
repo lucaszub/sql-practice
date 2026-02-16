@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { CheckCircle2, Circle, ChevronDown, ChevronRight, Database } from "lucide-react";
 import { exercises, getExercise } from "@/lib/exercises";
-import { dataAnalystTrack } from "@/lib/exercises/modules";
+import { dataAnalystTrack, dataEngineerTrack } from "@/lib/exercises/modules";
 import { useProgressStore } from "@/lib/store/progress";
 import { ActivityGraph } from "@/components/activity-graph";
 import { Badge } from "@/components/ui/badge";
@@ -69,9 +69,10 @@ export default function HomePage() {
   });
 
   // Unmapped exercises
-  const moduleExerciseIds = new Set(
-    dataAnalystTrack.modules.flatMap((m) => m.exerciseIds)
-  );
+  const moduleExerciseIds = new Set([
+    ...dataAnalystTrack.modules.flatMap((m) => m.exerciseIds),
+    ...dataEngineerTrack.modules.flatMap((m) => m.exerciseIds),
+  ]);
   const unmappedExercises = exercises.filter(
     (ex) => !moduleExerciseIds.has(ex.id)
   );

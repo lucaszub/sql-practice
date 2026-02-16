@@ -13,6 +13,11 @@
   "pnpm": {
     "onlyBuiltDependencies": [
       "esbuild"
+    ],
+    "ignoredBuiltDependencies": [
+      "msw",
+      "sharp",
+      "unrs-resolver"
     ]
   },
   "dependencies": {

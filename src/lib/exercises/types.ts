@@ -1,10 +1,37 @@
 export type Difficulty = "easy" | "medium" | "hard";
 
 export type Category =
+  | "select-fundamentals"
+  | "aggregation"
+  | "basic-joins"
+  | "null-handling"
+  | "ddl-dml"
+  | "data-types-constraints"
+  | "multi-table-joins"
+  | "subqueries-ctes"
   | "window-functions"
-  | "ctes"
   | "analytics-patterns"
-  | "advanced-joins";
+  | "anti-joins-set-ops"
+  | "date-string-functions"
+  | "conditional-aggregation"
+  | "schema-design"
+  | "ctes"
+  | "advanced-joins"
+  | "running-totals"
+  | "gaps-islands"
+  | "cohort-retention"
+  | "funnel-analysis"
+  | "revenue-metrics"
+  | "pivot-unpivot"
+  | "duckdb-modern-sql"
+  | "recursive-ctes"
+  | "merge-upsert"
+  | "incremental-loads"
+  | "query-optimization"
+  | "data-quality"
+  | "nested-data"
+  | "star-schema"
+  | "scd";
 
 export interface TestCase {
   name: string;

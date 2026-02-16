@@ -1,0 +1,106 @@
+import type {
+  TestCase,
+  QueryResult,
+  ValidationResult,
+} from "@/lib/exercises/types";
+
+function normalizeValue(v: unknown): unknown {
+  if (v === null || v === undefined) return null;
+  if (typeof v === "bigint") return Number(v);
+  if (typeof v === "number") return Math.round(v * 10000) / 10000;
+  return String(v);
+}
+
+function normalizeRow(row: Record<string, unknown>): Record<string, unknown> {
+  const normalized: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(row)) {
+    normalized[k.toLowerCase()] = normalizeValue(v);
+  }
+  return normalized;
+}
+
+function rowsEqual(
+  a: Record<string, unknown>,
+  b: Record<string, unknown>
+): boolean {
+  const keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+  return keys.every((k) => {
+    const va = a[k];
+    const vb = b[k];
+    if (va === null && vb === null) return true;
+    if (typeof va === "number" && typeof vb === "number") {
+      return Math.abs(va - vb) < 0.0001;
+    }
+    return String(va) === String(vb);
+  });
+}
+
+export function validateResult(
+  testCase: TestCase,
+  actual: QueryResult
+): ValidationResult {
+  const base = { testCase: testCase.name };
+
+  const expectedCols = testCase.expectedColumns.map((c) => c.toLowerCase());
+  const actualCols = actual.columns.map((c) => c.toLowerCase());
+
+  if (
+    expectedCols.length !== actualCols.length ||
+    !expectedCols.every((c) => actualCols.includes(c))
+  ) {
+    return {
+      ...base,
+      passed: false,
+      message: "Colonnes incorrectes.",
+      columnMismatch: {
+        expected: testCase.expectedColumns,
+        actual: actual.columns,
+      },
+    };
+  }
+
+  if (testCase.expectedRows.length !== actual.rows.length) {
+    return {
+      ...base,
+      passed: false,
+      message: `Nombre de lignes incorrect: attendu ${testCase.expectedRows.length}, obtenu ${actual.rows.length}.`,
+    };
+  }
+
+  const normalizedExpected = testCase.expectedRows.map(normalizeRow);
+  const normalizedActual = actual.rows.map(normalizeRow);
+
+  if (testCase.orderMatters) {
+    for (let i = 0; i < normalizedExpected.length; i++) {
+      if (!rowsEqual(normalizedExpected[i], normalizedActual[i])) {
+        return {
+          ...base,
+          passed: false,
+          message: `Ligne ${i + 1} incorrecte.`,
+          missingRows: [testCase.expectedRows[i]],
+          extraRows: [actual.rows[i]],
+        };
+      }
+    }
+  } else {
+    const missing = normalizedExpected.filter(
+      (exp) => !normalizedActual.some((act) => rowsEqual(exp, act))
+    );
+    const extra = normalizedActual.filter(
+      (act) => !normalizedExpected.some((exp) => rowsEqual(exp, act))
+    );
+
+    if (missing.length > 0 || extra.length > 0) {
+      return {
+        ...base,
+        passed: false,
+        message: `Contenu incorrect: ${missing.length} lignes manquantes, ${extra.length} lignes en trop.`,
+        missingRows: missing.length > 0 ? missing : undefined,
+        extraRows: extra.length > 0 ? extra : undefined,
+      };
+    }
+  }
+
+  return { ...base, passed: true, message: "OK" };
+}

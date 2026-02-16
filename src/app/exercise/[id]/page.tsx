@@ -4,7 +4,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { getExercise, exercises } from "@/lib/exercises";
 import { getDuckDb, type AsyncDuckDB } from "@/lib/db/duckdb";
-import { executeQuery, loadSchema } from "@/lib/db/query-runner";
+import { executeQuery, loadSchema, resetSchema } from "@/lib/db/query-runner";
 import { validateResult } from "@/lib/db/validator";
 import { useExerciseSession } from "@/lib/store/exercise-session";
 import { useProgressStore } from "@/lib/store/progress";
@@ -67,16 +67,7 @@ export default function ExercisePage() {
         if (cancelled) return;
         setDb(instance);
 
-        const conn = await instance.connect();
-        try {
-          await conn.query("DROP SCHEMA IF EXISTS main CASCADE");
-          await conn.query("CREATE SCHEMA main");
-        } catch {
-          // ignore if can't drop
-        }
-        await conn.close();
-
-        await loadSchema(instance, exercise.schema);
+        await resetSchema(instance, exercise.schema);
         if (!cancelled) setDbReady(true);
       } catch (err) {
         if (!cancelled) setError(String(err));
@@ -96,15 +87,37 @@ export default function ExercisePage() {
     setValidationResults([]);
 
     try {
+      // Run user's query against base schema (for Results tab display)
       const result = await executeQuery(db, currentSql);
       setQueryResult(result);
 
-      const results = exercise.testCases.map((tc) => {
+      // Validate against all test cases
+      const results: import("@/lib/exercises/types").ValidationResult[] = [];
+      for (const tc of exercise.testCases) {
         if (tc.setupSql) {
-          return validateResult(tc, result);
+          // Reload schema + execute setupSql + re-run user query
+          try {
+            await resetSchema(db, exercise.schema);
+            await loadSchema(db, tc.setupSql);
+            const tcResult = await executeQuery(db, currentSql);
+            results.push(validateResult(tc, tcResult));
+          } catch (err) {
+            results.push({
+              testCase: tc.name,
+              passed: false,
+              message: err instanceof Error ? err.message : String(err),
+            });
+          }
+        } else {
+          results.push(validateResult(tc, result));
         }
-        return validateResult(tc, result);
-      });
+      }
+
+      // Restore base schema only if we modified it during validation
+      if (exercise.testCases.some((tc) => tc.setupSql)) {
+        await resetSchema(db, exercise.schema);
+      }
+
       setValidationResults(results);
 
       const allPassed = results.every((r) => r.passed);
@@ -214,8 +227,14 @@ export default function ExercisePage() {
                     <TabsTrigger value="tests">
                       Tests
                       {validationResults.length > 0 && (
-                        <span className="ml-1.5">
-                          {validationResults.every((r) => r.passed) ? "✓" : "✗"}
+                        <span
+                          className={`ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none ${
+                            validationResults.every((r) => r.passed)
+                              ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
+                              : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300"
+                          }`}
+                        >
+                          {validationResults.filter((r) => r.passed).length}/{validationResults.length}
                         </span>
                       )}
                     </TabsTrigger>
@@ -224,7 +243,7 @@ export default function ExercisePage() {
                     <ResultsTable result={queryResult} error={error} />
                   </TabsContent>
                   <TabsContent value="tests" className="flex-1 overflow-auto mt-0 p-3">
-                    <TestResults results={validationResults} />
+                    <TestResults results={validationResults} testCases={exercise.testCases} />
                   </TabsContent>
                 </Tabs>
               </ResizablePanel>

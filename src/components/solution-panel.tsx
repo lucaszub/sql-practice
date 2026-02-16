@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { markdownComponents } from "./markdown-components";
 
 interface SolutionPanelProps {
   solutionQuery: string;
@@ -45,8 +46,8 @@ export function SolutionPanel({
         <p className="text-xs font-medium text-muted-foreground mb-2">Solution Query</p>
         <pre className="text-xs font-mono whitespace-pre-wrap overflow-auto">{solutionQuery.trim()}</pre>
       </div>
-      <div className="prose prose-sm dark:prose-invert max-w-none">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      <div className="max-w-none">
+        <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
           {solutionExplanation}
         </ReactMarkdown>
       </div>

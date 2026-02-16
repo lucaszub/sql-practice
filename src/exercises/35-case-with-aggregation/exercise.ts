@@ -104,7 +104,7 @@ DuckDB also supports the \`COUNT(*) FILTER (WHERE condition)\` syntax as a clean
       expectedRows: [
         { order_month: "2024-01-01", small_count: 2, medium_count: 2, large_count: 1 },
         { order_month: "2024-02-01", small_count: 3, medium_count: 2, large_count: 1 },
-        { order_month: "2024-03-01", small_count: 2, medium_count: 2, large_count: 2 },
+        { order_month: "2024-03-01", small_count: 2, medium_count: 2, large_count: 3 },
       ],
       orderMatters: true,
     },

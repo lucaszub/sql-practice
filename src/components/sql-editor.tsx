@@ -5,7 +5,7 @@ import { sql, PostgreSQL } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { keymap } from "@codemirror/view";
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 
 interface SqlEditorProps {
   value: string;
@@ -31,8 +31,12 @@ export function SqlEditor({ value, onChange, onRun, isRunning }: SqlEditorProps)
       <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/50">
         <span className="text-sm font-medium">SQL Editor</span>
         <Button onClick={onRun} size="sm" disabled={isRunning}>
-          <Play className="mr-1 h-3 w-3" />
-          {isRunning ? "Running..." : "Run (Ctrl+Enter)"}
+          {isRunning ? (
+            <Loader2 className="mr-1.5 h-3 w-3 animate-spin" />
+          ) : (
+            <Send className="mr-1.5 h-3 w-3" />
+          )}
+          {isRunning ? "Running..." : "Submit (Ctrl+Enter)"}
         </Button>
       </div>
       <div className="flex-1 overflow-auto">

@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
 
-## Getting Started
+# PracticeData
 
-First, run the development server:
+**Master data skills, one exercise at a time.**
+
+SQL today. Pandas tomorrow. Zero setup — runs entirely in your browser.
+
+</div>
+
+---
+
+## What is PracticeData?
+
+PracticeData is an open-source, browser-based platform for practicing real-world data skills. No database to install, no environment to configure — just open the app and start writing queries.
+
+Powered by **DuckDB-WASM**, everything runs locally in your browser. Your progress is saved automatically.
+
+## Features
+
+- **36 exercises** across 4 modules, from `SELECT` basics to window functions
+- **Instant feedback** — submit your query, see results and validation in real time
+- **Real business scenarios** — every exercise is framed as a question a data team would actually ask
+- **Dark & light mode** — easy on the eyes, day or night
+- **Activity tracking** — GitHub-style contribution graph to keep you motivated
+- **Progress by module** — track completion across structured learning paths
+- **100% client-side** — no backend, no account, no data leaves your browser
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js (App Router) |
+| SQL Engine | DuckDB-WASM |
+| Editor | CodeMirror 6 |
+| UI | shadcn/ui + Tailwind CSS |
+| State | Zustand (localStorage) |
+| Testing | Vitest |
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+git clone https://github.com/practicedata/practicedata.git
+cd practicedata
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) and start practicing.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|------------|
+| `pnpm dev` | Development server |
+| `pnpm build` | Production build |
+| `pnpm test` | Run unit tests (watch) |
+| `pnpm test:run` | Run unit tests (CI) |
+| `pnpm test:integration` | Run all exercises against DuckDB |
+| `pnpm lint` | ESLint |
 
-## Learn More
+## Roadmap
 
-To learn more about Next.js, take a look at the following resources:
+- [x] SQL exercises (Beginner: SELECT, JOINs, aggregation, subqueries)
+- [ ] Intermediate SQL (window functions, CTEs, set operations)
+- [ ] Advanced SQL (recursive queries, optimization, data engineering)
+- [ ] Pandas exercises
+- [ ] Career tracks: Data Analyst & Data Engineer
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions are welcome! Whether it's a new exercise, a bug fix, or a UI improvement — open an issue or submit a PR.
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT

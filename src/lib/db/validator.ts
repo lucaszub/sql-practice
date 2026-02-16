@@ -8,7 +8,15 @@ function normalizeValue(v: unknown): unknown {
   if (v === null || v === undefined) return null;
   if (typeof v === "bigint") return Number(v);
   if (typeof v === "number") return Math.round(v * 10000) / 10000;
-  return String(v);
+  const s = String(v);
+  // Normalize midnight timestamps to date strings
+  // e.g. "2024-01-01 00:00:00.000" or "2024-01-01 00:00:00" → "2024-01-01"
+  // Handles DATE_TRUNC returning TIMESTAMP instead of DATE
+  const midnightMatch = s.match(
+    /^(\d{4}-\d{2}-\d{2})[T ](00:00:00(?:\.0+)?)$/
+  );
+  if (midnightMatch) return midnightMatch[1];
+  return s;
 }
 
 function normalizeRow(row: Record<string, unknown>): Record<string, unknown> {

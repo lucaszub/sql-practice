@@ -2,9 +2,11 @@
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { markdownComponents } from "./markdown-components";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SchemaPanel } from "./schema-panel";
 import { SolutionPanel } from "./solution-panel";
+import { ExampleOutput } from "./example-output";
 import { Button } from "@/components/ui/button";
 import { Lightbulb } from "lucide-react";
 import { useState } from "react";
@@ -20,11 +22,13 @@ export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
   return (
     <ScrollArea className="h-full">
       <div className="p-4 space-y-4">
-        <div className="prose prose-sm dark:prose-invert max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+        <div className="max-w-none">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
             {exercise.description}
           </ReactMarkdown>
         </div>
+
+        <ExampleOutput exercise={exercise} />
 
         <SchemaPanel schemaSql={exercise.schema} />
 

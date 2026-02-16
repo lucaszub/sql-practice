@@ -3,6 +3,21 @@ import type {
   QueryResult,
   ValidationResult,
 } from "@/lib/exercises/types";
+import { useLocaleStore } from "@/lib/i18n";
+import { translations, type TranslationKey } from "@/lib/i18n/translations";
+
+function getT() {
+  const locale = useLocaleStore.getState().locale;
+  return (key: TranslationKey, params?: Record<string, string | number>) => {
+    let text = translations[key][locale];
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        text = text.replace(`{${k}}`, String(v));
+      }
+    }
+    return text;
+  };
+}
 
 function normalizeValue(v: unknown): unknown {
   if (v === null || v === undefined) return null;
@@ -48,6 +63,7 @@ export function validateResult(
   testCase: TestCase,
   actual: QueryResult
 ): ValidationResult {
+  const t = getT();
   const base = { testCase: testCase.name };
 
   const expectedCols = testCase.expectedColumns.map((c) => c.toLowerCase());
@@ -60,7 +76,7 @@ export function validateResult(
     return {
       ...base,
       passed: false,
-      message: "Colonnes incorrectes.",
+      message: t("validator.incorrectColumns"),
       columnMismatch: {
         expected: testCase.expectedColumns,
         actual: actual.columns,
@@ -72,7 +88,10 @@ export function validateResult(
     return {
       ...base,
       passed: false,
-      message: `Nombre de lignes incorrect: attendu ${testCase.expectedRows.length}, obtenu ${actual.rows.length}.`,
+      message: t("validator.incorrectRowCount", {
+        expected: testCase.expectedRows.length,
+        actual: actual.rows.length,
+      }),
     };
   }
 
@@ -85,7 +104,7 @@ export function validateResult(
         return {
           ...base,
           passed: false,
-          message: `Ligne ${i + 1} incorrecte.`,
+          message: t("validator.incorrectRow", { row: i + 1 }),
           missingRows: [testCase.expectedRows[i]],
           extraRows: [actual.rows[i]],
         };
@@ -103,7 +122,10 @@ export function validateResult(
       return {
         ...base,
         passed: false,
-        message: `Contenu incorrect: ${missing.length} lignes manquantes, ${extra.length} lignes en trop.`,
+        message: t("validator.incorrectContent", {
+          missing: missing.length,
+          extra: extra.length,
+        }),
         missingRows: missing.length > 0 ? missing : undefined,
         extraRows: extra.length > 0 ? extra : undefined,
       };

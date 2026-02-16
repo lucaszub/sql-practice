@@ -36,6 +36,7 @@ export type Category =
 export interface TestCase {
   name: string;
   description: string;
+  descriptionFr?: string;
   setupSql?: string;
   expectedColumns: string[];
   expectedRows: Record<string, unknown>[];
@@ -45,13 +46,17 @@ export interface TestCase {
 export interface Exercise {
   id: string;
   title: string;
+  titleFr?: string;
   difficulty: Difficulty;
   category: Category;
   description: string;
+  descriptionFr?: string;
   hint?: string;
+  hintFr?: string;
   schema: string;
   solutionQuery: string;
   solutionExplanation: string;
+  solutionExplanationFr?: string;
   testCases: TestCase[];
 }
 

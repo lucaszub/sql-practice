@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Lightbulb } from "lucide-react";
 import { useState } from "react";
 import type { Exercise } from "@/lib/exercises/types";
+import { useLocalizedExercise, useLocale } from "@/lib/i18n";
 
 interface ExerciseDescriptionProps {
   exercise: Exercise;
@@ -18,13 +19,15 @@ interface ExerciseDescriptionProps {
 
 export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
   const [showHint, setShowHint] = useState(false);
+  const localized = useLocalizedExercise(exercise);
+  const { t } = useLocale();
 
   return (
     <ScrollArea className="h-full">
       <div className="p-4 space-y-4">
         <div className="max-w-none">
           <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-            {exercise.description}
+            {localized.localizedDescription}
           </ReactMarkdown>
         </div>
 
@@ -32,7 +35,7 @@ export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
 
         <SchemaPanel schemaSql={exercise.schema} />
 
-        {exercise.hint && (
+        {localized.localizedHint && (
           <div>
             {!showHint ? (
               <Button
@@ -41,11 +44,11 @@ export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
                 onClick={() => setShowHint(true)}
               >
                 <Lightbulb className="mr-1 h-3 w-3" />
-                Show Hint
+                {t("exercise.showHint")}
               </Button>
             ) : (
               <div className="rounded-md border border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950 p-3 text-sm">
-                {exercise.hint}
+                {localized.localizedHint}
               </div>
             )}
           </div>
@@ -53,7 +56,7 @@ export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
 
         <SolutionPanel
           solutionQuery={exercise.solutionQuery}
-          solutionExplanation={exercise.solutionExplanation}
+          solutionExplanation={localized.localizedSolutionExplanation}
         />
       </div>
     </ScrollArea>

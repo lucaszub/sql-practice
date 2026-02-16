@@ -1,15 +1,17 @@
 "use client";
 
-import * as duckdb from "@duckdb/duckdb-wasm";
+export type { AsyncDuckDB } from "@duckdb/duckdb-wasm";
+import type { AsyncDuckDB } from "@duckdb/duckdb-wasm";
 
-let db: duckdb.AsyncDuckDB | null = null;
-let initializing: Promise<duckdb.AsyncDuckDB> | null = null;
+let db: AsyncDuckDB | null = null;
+let initializing: Promise<AsyncDuckDB> | null = null;
 
-export async function getDuckDb(): Promise<duckdb.AsyncDuckDB> {
+export async function getDuckDb(): Promise<AsyncDuckDB> {
   if (db) return db;
   if (initializing) return initializing;
 
   initializing = (async () => {
+    const duckdb = await import("@duckdb/duckdb-wasm");
     const JSDELIVR_BUNDLES = duckdb.getJsDelivrBundles();
     const bundle = await duckdb.selectBundle(JSDELIVR_BUNDLES);
 

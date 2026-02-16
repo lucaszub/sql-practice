@@ -3,7 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
 import { getExercise, exercises } from "@/lib/exercises";
-import { getDuckDb } from "@/lib/db/duckdb";
+import { getDuckDb, type AsyncDuckDB } from "@/lib/db/duckdb";
 import { executeQuery, loadSchema } from "@/lib/db/query-runner";
 import { validateResult } from "@/lib/db/validator";
 import { useExerciseSession } from "@/lib/store/exercise-session";
@@ -21,8 +21,8 @@ import { ExerciseDescription } from "@/components/exercise-description";
 import { SqlEditor } from "@/components/sql-editor";
 import { ResultsTable } from "@/components/results-table";
 import { TestResults } from "@/components/test-results";
-import type { Exercise as ExerciseType } from "@/lib/exercises/types";
-import type { AsyncDuckDB } from "@duckdb/duckdb-wasm";
+
+
 
 export default function ExercisePage() {
   const params = useParams();
@@ -54,6 +54,7 @@ export default function ExercisePage() {
     if (progress[id]?.lastAttempt) {
       setSql(progress[id].lastAttempt!);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   useEffect(() => {
@@ -83,6 +84,7 @@ export default function ExercisePage() {
     })();
 
     return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise, id]);
 
   const handleRun = useCallback(async () => {
@@ -117,6 +119,7 @@ export default function ExercisePage() {
     } finally {
       setIsRunning(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [db, exercise, currentSql, isRunning, id]);
 
   if (!exercise) {
@@ -188,13 +191,13 @@ export default function ExercisePage() {
           </div>
         </div>
       ) : (
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
+        <ResizablePanelGroup orientation="horizontal" className="flex-1">
           <ResizablePanel defaultSize={40} minSize={25}>
             <ExerciseDescription exercise={exercise} />
           </ResizablePanel>
           <ResizableHandle withHandle />
           <ResizablePanel defaultSize={60} minSize={30}>
-            <ResizablePanelGroup direction="vertical">
+            <ResizablePanelGroup orientation="vertical">
               <ResizablePanel defaultSize={50} minSize={20}>
                 <SqlEditor
                   value={currentSql}

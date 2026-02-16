@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useMemo } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { sql, PostgreSQL } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -18,16 +19,25 @@ interface SqlEditorProps {
 export function SqlEditor({ value, onChange, onRun, isRunning }: SqlEditorProps) {
   const { t } = useLocale();
 
-  const runKeymap = keymap.of([
-    {
-      key: "Ctrl-Enter",
-      mac: "Cmd-Enter",
-      run: () => {
-        onRun();
-        return true;
-      },
-    },
-  ]);
+  const onRunRef = useRef(onRun);
+  onRunRef.current = onRun;
+
+  const extensions = useMemo(
+    () => [
+      sql({ dialect: PostgreSQL }),
+      keymap.of([
+        {
+          key: "Ctrl-Enter",
+          mac: "Cmd-Enter",
+          run: () => {
+            onRunRef.current();
+            return true;
+          },
+        },
+      ]),
+    ],
+    []
+  );
 
   return (
     <div className="flex flex-col h-full">
@@ -46,7 +56,7 @@ export function SqlEditor({ value, onChange, onRun, isRunning }: SqlEditorProps)
         <CodeMirror
           value={value}
           onChange={onChange}
-          extensions={[sql({ dialect: PostgreSQL }), runKeymap]}
+          extensions={extensions}
           theme={oneDark}
           height="100%"
           className="h-full"

@@ -9,7 +9,7 @@ import { translations, type TranslationKey } from "@/lib/i18n/translations";
 function getT() {
   const locale = useLocaleStore.getState().locale;
   return (key: TranslationKey, params?: Record<string, string | number>) => {
-    let text = translations[key][locale];
+    let text: string = translations[key][locale];
     if (params) {
       for (const [k, v] of Object.entries(params)) {
         text = text.replace(`{${k}}`, String(v));

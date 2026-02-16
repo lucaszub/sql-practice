@@ -16,12 +16,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Languages, Sun, Moon } from "lucide-react";
 import { ExerciseDescription } from "@/components/exercise-description";
 import { SqlEditor } from "@/components/sql-editor";
 import { ResultsTable } from "@/components/results-table";
 import { TestResults } from "@/components/test-results";
 import { useLocale, type TranslationKey } from "@/lib/i18n";
+import { useTheme } from "@/components/theme-provider";
 
 
 
@@ -46,7 +47,8 @@ export default function ExercisePage() {
   } = useExerciseSession();
 
   const { markSolved, recordAttempt, progress } = useProgressStore();
-  const { locale, t } = useLocale();
+  const { locale, toggle: toggleLocale, t } = useLocale();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const [db, setDb] = useState<AsyncDuckDB | null>(null);
   const [dbReady, setDbReady] = useState(false);
@@ -175,6 +177,12 @@ export default function ExercisePage() {
           </Badge>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleLocale} title={locale === "en" ? "Passer en français" : "Switch to English"}>
+            <Languages className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleTheme}>
+            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+          </Button>
           {prevExercise && (
             <Button
               variant="ghost"

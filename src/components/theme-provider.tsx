@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { useLocaleStore } from "@/lib/i18n/use-locale";
 
 type Theme = "dark" | "light";
 
@@ -20,6 +21,7 @@ export function useTheme() {
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark");
+  const locale = useLocaleStore((s) => s.locale);
 
   useEffect(() => {
     const stored = localStorage.getItem("pd-theme") as Theme | null;
@@ -34,6 +36,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     root.classList.add(theme);
     localStorage.setItem("pd-theme", theme);
   }, [theme]);
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+  }, [locale]);
 
   const toggle = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
 

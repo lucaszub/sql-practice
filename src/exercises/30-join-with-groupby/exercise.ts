@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "30-join-with-groupby",
   title: "Average Order Value by Product Category",
+  titleFr: "Valeur moyenne des commandes par categorie de produits",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Average Order Value by Product Category

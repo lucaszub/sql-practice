@@ -15,14 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Difficulty } from "@/lib/exercises/types";
-
-const difficulties: { value: Difficulty | "all"; label: string }[] = [
-  { value: "all", label: "All Levels" },
-  { value: "easy", label: "Easy" },
-  { value: "medium", label: "Medium" },
-  { value: "hard", label: "Hard" },
-];
+import type { Difficulty, Exercise } from "@/lib/exercises/types";
+import { useLocale, type TranslationKey } from "@/lib/i18n";
 
 const difficultyColors: Record<string, string> = {
   easy: "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200",
@@ -35,6 +29,17 @@ export default function HomePage() {
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const progress = useProgressStore((s) => s.progress);
   const activityDays = useProgressStore((s) => s.activityDays);
+  const { locale, t } = useLocale();
+
+  const difficulties: { value: Difficulty | "all"; label: string }[] = [
+    { value: "all", label: t("difficulty.all") },
+    { value: "easy", label: t("difficulty.easy") },
+    { value: "medium", label: t("difficulty.medium") },
+    { value: "hard", label: t("difficulty.hard") },
+  ];
+
+  const getTitle = (ex: Exercise) =>
+    locale === "fr" && ex.titleFr ? ex.titleFr : ex.title;
 
   const solvedIds = new Set(
     Object.entries(progress)
@@ -87,13 +92,13 @@ export default function HomePage() {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 text-muted-foreground text-sm mb-2">
           <Database className="h-4 w-4" />
-          <span>Powered by DuckDB — runs entirely in your browser</span>
+          <span>{t("home.poweredBy")}</span>
         </div>
         <h1 className="text-4xl font-bold tracking-tight">
-          Master data skills, one exercise at a time
+          {t("home.title")}
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Real business questions. Instant feedback. SQL today, Pandas tomorrow.
+          {t("home.subtitle")}
         </p>
       </div>
 
@@ -103,7 +108,7 @@ export default function HomePage() {
           <div className="flex items-center gap-6">
             <div>
               <p className="text-2xl font-bold">{solvedCount}<span className="text-muted-foreground font-normal text-base">/{totalCount}</span></p>
-              <p className="text-xs text-muted-foreground">exercises solved</p>
+              <p className="text-xs text-muted-foreground">{t("home.exercisesSolved")}</p>
             </div>
             <div className="h-10 w-px bg-border" />
             <div>
@@ -116,7 +121,7 @@ export default function HomePage() {
                 </div>
                 <span className="text-sm font-medium">{pctGlobal}%</span>
               </div>
-              <p className="text-xs text-muted-foreground mt-0.5">overall progress</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{t("home.overallProgress")}</p>
             </div>
           </div>
         </div>
@@ -125,7 +130,7 @@ export default function HomePage() {
 
       {/* ── Filters ───────────────────────────────────────── */}
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">Exercises</h2>
+        <h2 className="text-lg font-semibold">{t("home.exercises")}</h2>
         <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
           <SelectTrigger className="w-[150px]">
             <SelectValue />
@@ -151,7 +156,7 @@ export default function HomePage() {
                     {mod.id} — {mod.name}
                   </span>
                   <Badge variant="secondary" className="text-[10px]">
-                    Coming Soon
+                    {t("home.comingSoon")}
                   </Badge>
                 </div>
               </div>
@@ -208,12 +213,12 @@ export default function HomePage() {
                         ) : (
                           <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
                         )}
-                        <span className="text-sm flex-1 truncate">{ex.title}</span>
+                        <span className="text-sm flex-1 truncate">{getTitle(ex)}</span>
                         <Badge
                           variant="outline"
                           className={`text-[10px] ${difficultyColors[ex.difficulty]}`}
                         >
-                          {ex.difficulty}
+                          {t(`difficulty.${ex.difficulty}` as TranslationKey)}
                         </Badge>
                       </Link>
                     );
@@ -227,7 +232,7 @@ export default function HomePage() {
         {filteredUnmapped.length > 0 && (
           <div className="rounded-md border overflow-hidden">
             <div className="px-4 py-3 bg-muted/40">
-              <span className="text-sm font-semibold">Other Exercises</span>
+              <span className="text-sm font-semibold">{t("home.otherExercises")}</span>
             </div>
             <div className="divide-y">
               {filteredUnmapped.map((ex) => {
@@ -243,12 +248,12 @@ export default function HomePage() {
                     ) : (
                       <Circle className="h-4 w-4 text-muted-foreground shrink-0" />
                     )}
-                    <span className="text-sm flex-1 truncate">{ex.title}</span>
+                    <span className="text-sm flex-1 truncate">{getTitle(ex)}</span>
                     <Badge
                       variant="outline"
                       className={`text-[10px] ${difficultyColors[ex.difficulty]}`}
                     >
-                      {ex.difficulty}
+                      {t(`difficulty.${ex.difficulty}` as TranslationKey)}
                     </Badge>
                   </Link>
                 );
@@ -261,7 +266,7 @@ export default function HomePage() {
       {modulesWithExercises.every(({ exercises: e }) => e.length === 0) &&
         filteredUnmapped.length === 0 && (
           <div className="text-center py-12 text-muted-foreground">
-            No exercises match the selected filter.
+            {t("home.noMatch")}
           </div>
         )}
     </div>

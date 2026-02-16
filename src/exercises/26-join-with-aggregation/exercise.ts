@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "26-join-with-aggregation",
   title: "Total Spend per Customer",
+  titleFr: "Depenses totales par client",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Total Spend per Customer

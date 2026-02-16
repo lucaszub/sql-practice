@@ -21,6 +21,7 @@ import { ExerciseDescription } from "@/components/exercise-description";
 import { SqlEditor } from "@/components/sql-editor";
 import { ResultsTable } from "@/components/results-table";
 import { TestResults } from "@/components/test-results";
+import { useLocale, type TranslationKey } from "@/lib/i18n";
 
 
 
@@ -45,6 +46,7 @@ export default function ExercisePage() {
   } = useExerciseSession();
 
   const { markSolved, recordAttempt, progress } = useProgressStore();
+  const { locale, t } = useLocale();
 
   const [db, setDb] = useState<AsyncDuckDB | null>(null);
   const [dbReady, setDbReady] = useState(false);
@@ -139,9 +141,9 @@ export default function ExercisePage() {
     return (
       <div className="flex items-center justify-center h-screen">
         <div className="text-center">
-          <h2 className="text-xl font-bold">Exercise not found</h2>
+          <h2 className="text-xl font-bold">{t("exercise.notFound")}</h2>
           <Button variant="link" onClick={() => router.push("/")}>
-            Back to exercises
+            {t("nav.backToExercises")}
           </Button>
         </div>
       </div>
@@ -165,11 +167,11 @@ export default function ExercisePage() {
         <div className="flex items-center gap-3">
           <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
             <ChevronLeft className="h-4 w-4 mr-1" />
-            Back
+            {t("nav.back")}
           </Button>
-          <h1 className="text-lg font-semibold">{exercise.title}</h1>
+          <h1 className="text-lg font-semibold">{locale === "fr" && exercise.titleFr ? exercise.titleFr : exercise.title}</h1>
           <Badge variant="outline" className={difficultyColor[exercise.difficulty]}>
-            {exercise.difficulty}
+            {t(`difficulty.${exercise.difficulty}` as TranslationKey)}
           </Badge>
         </div>
         <div className="flex items-center gap-2">
@@ -180,7 +182,7 @@ export default function ExercisePage() {
               onClick={() => router.push(`/exercise/${prevExercise.id}`)}
             >
               <ChevronLeft className="h-4 w-4" />
-              Prev
+              {t("nav.prev")}
             </Button>
           )}
           {nextExercise && (
@@ -189,7 +191,7 @@ export default function ExercisePage() {
               size="sm"
               onClick={() => router.push(`/exercise/${nextExercise.id}`)}
             >
-              Next
+              {t("nav.next")}
               <ChevronRight className="h-4 w-4" />
             </Button>
           )}
@@ -200,7 +202,7 @@ export default function ExercisePage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
-            <p className="mt-3 text-sm text-muted-foreground">Loading SQL engine...</p>
+            <p className="mt-3 text-sm text-muted-foreground">{t("exercise.loading")}</p>
           </div>
         </div>
       ) : (
@@ -223,9 +225,9 @@ export default function ExercisePage() {
               <ResizablePanel defaultSize={50} minSize={20}>
                 <Tabs defaultValue="results" className="h-full flex flex-col">
                   <TabsList className="mx-3 mt-2">
-                    <TabsTrigger value="results">Results</TabsTrigger>
+                    <TabsTrigger value="results">{t("exercise.results")}</TabsTrigger>
                     <TabsTrigger value="tests">
-                      Tests
+                      {t("exercise.tests")}
                       {validationResults.length > 0 && (
                         <span
                           className={`ml-1.5 inline-flex items-center justify-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold leading-none ${

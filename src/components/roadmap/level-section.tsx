@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { ModuleCard } from "./module-card";
 import type { Module } from "@/lib/exercises/modules";
 import { getModuleProgress, type Track } from "@/lib/exercises/modules";
+import { useLocale } from "@/lib/i18n";
 
 interface LevelSectionProps {
   level: "beginner" | "intermediate" | "advanced";
@@ -12,13 +13,15 @@ interface LevelSectionProps {
   solvedIds: Set<string>;
 }
 
-const levelConfig = {
-  beginner: { label: "Beginner", color: "bg-green-500", textColor: "text-green-500", description: "Build your SQL foundations" },
-  intermediate: { label: "Intermediate", color: "bg-yellow-500", textColor: "text-yellow-500", description: "Compose complex queries" },
-  advanced: { label: "Advanced", color: "bg-red-500", textColor: "text-red-500", description: "Master analytical patterns" },
-};
-
 export function LevelSection({ level, modules, track, solvedIds }: LevelSectionProps) {
+  const { t } = useLocale();
+
+  const levelConfig = {
+    beginner: { label: t("level.beginner"), color: "bg-green-500", textColor: "text-green-500", description: t("level.beginner.desc") },
+    intermediate: { label: t("level.intermediate"), color: "bg-yellow-500", textColor: "text-yellow-500", description: t("level.intermediate.desc") },
+    advanced: { label: t("level.advanced"), color: "bg-red-500", textColor: "text-red-500", description: t("level.advanced.desc") },
+  };
+
   const config = levelConfig[level];
 
   const totalExercises = modules.reduce((sum, m) => sum + m.exerciseIds.length, 0);
@@ -35,7 +38,7 @@ export function LevelSection({ level, modules, track, solvedIds }: LevelSectionP
           <div className={cn("h-2 w-2 rounded-full", config.color)} />
           <h2 className="text-lg font-bold">{config.label}</h2>
           <span className="text-sm text-muted-foreground">
-            {solvedExercises}/{totalExercises} exercises
+            {solvedExercises}/{totalExercises} {t("roadmap.exercises")}
           </span>
         </div>
         <p className="text-sm text-muted-foreground ml-5">{config.description}</p>

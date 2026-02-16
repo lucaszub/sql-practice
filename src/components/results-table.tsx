@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { QueryResult } from "@/lib/exercises/types";
+import { useLocale } from "@/lib/i18n";
 
 interface ResultsTableProps {
   result: QueryResult | null;
@@ -15,6 +16,7 @@ interface ResultsTableProps {
 }
 
 export function ResultsTable({ result, error }: ResultsTableProps) {
+  const { t } = useLocale();
   const columns = useMemo<ColumnDef<Record<string, unknown>>[]>(() => {
     if (!result) return [];
     return result.columns.map((col) => ({
@@ -38,7 +40,7 @@ export function ResultsTable({ result, error }: ResultsTableProps) {
     return (
       <div className="p-4">
         <div className="rounded-md bg-destructive/10 border border-destructive/20 p-3">
-          <p className="text-sm font-medium text-destructive">Error</p>
+          <p className="text-sm font-medium text-destructive">{t("exercise.error")}</p>
           <pre className="mt-1 text-xs text-destructive/80 whitespace-pre-wrap">{error}</pre>
         </div>
       </div>
@@ -48,7 +50,7 @@ export function ResultsTable({ result, error }: ResultsTableProps) {
   if (!result) {
     return (
       <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
-        Run a query to see results
+        {t("exercise.runQuery")}
       </div>
     );
   }
@@ -56,9 +58,9 @@ export function ResultsTable({ result, error }: ResultsTableProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="px-3 py-2 border-b bg-muted/50 flex items-center justify-between">
-        <span className="text-sm font-medium">Results</span>
+        <span className="text-sm font-medium">{t("exercise.results")}</span>
         <span className="text-xs text-muted-foreground">
-          {result.rowCount} rows · {result.executionTimeMs.toFixed(1)}ms
+          {result.rowCount} {t("exercise.rows")} · {result.executionTimeMs.toFixed(1)}ms
         </span>
       </div>
       <div className="flex-1 overflow-auto">

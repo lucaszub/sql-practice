@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "21-group-by-category",
   title: "Revenue Breakdown by Product Category",
+  titleFr: "Ventilation du chiffre d'affaires par categorie de produits",
   difficulty: "easy",
   category: "aggregation",
   description: `## Revenue Breakdown by Product Category
@@ -37,6 +38,39 @@ Write a query that returns, for each product category:
 Order by \`total_revenue\` DESC.
 
 ### Expected output columns
+\`category\`, \`total_items_sold\`, \`total_revenue\``,
+  descriptionFr: `## Ventilation du chiffre d'affaires par categorie de produits
+
+La direction souhaite consulter la **ventilation du chiffre d'affaires par categorie de produits** afin de decider comment repartir le budget d'inventaire pour le prochain trimestre. Les categories generant le plus de revenus devraient recevoir une part plus importante.
+
+### Schema
+
+**products**
+| Column | Type |
+|--------|------|
+| product_id | INTEGER |
+| product_name | VARCHAR |
+| category | VARCHAR |
+
+**order_items**
+| Column | Type |
+|--------|------|
+| item_id | INTEGER |
+| order_id | INTEGER |
+| product_id | INTEGER |
+| quantity | INTEGER |
+| unit_price | DECIMAL(10,2) |
+
+### Tache
+
+Ecrivez une requete qui retourne, pour chaque categorie de produits :
+- \`category\` : la categorie du produit
+- \`total_items_sold\` : la quantite totale d'articles vendus
+- \`total_revenue\` : le chiffre d'affaires total (quantity * unit_price) pour cette categorie
+
+Triez par \`total_revenue\` DESC.
+
+### Colonnes attendues en sortie
 \`category\`, \`total_items_sold\`, \`total_revenue\``,
   hint: "Join products to order_items on product_id. Use SUM(quantity) for items sold and SUM(quantity * unit_price) for revenue. GROUP BY category.",
   schema: `CREATE TABLE products (

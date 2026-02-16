@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "23-having-filter",
   title: "Premium Supplier Program Categories",
+  titleFr: "Categories eligibles au programme fournisseur premium",
   difficulty: "easy",
   category: "aggregation",
   description: `## Premium Supplier Program Categories
@@ -39,6 +40,41 @@ Only include categories where \`total_revenue\` exceeds 1000.
 Order by \`total_revenue\` DESC.
 
 ### Expected output columns
+\`category\`, \`total_revenue\`, \`total_orders\``,
+  descriptionFr: `## Categories eligibles au programme fournisseur premium
+
+Trouvez les categories de produits ayant genere **plus de 1 000 $ de chiffre d'affaires total** -- celles-ci sont eligibles au programme fournisseur premium, qui offre de meilleurs tarifs de gros et un reapprovisionnement prioritaire.
+
+### Schema
+
+**products**
+| Column | Type |
+|--------|------|
+| product_id | INTEGER |
+| product_name | VARCHAR |
+| category | VARCHAR |
+
+**order_items**
+| Column | Type |
+|--------|------|
+| item_id | INTEGER |
+| order_id | INTEGER |
+| product_id | INTEGER |
+| quantity | INTEGER |
+| unit_price | DECIMAL(10,2) |
+
+### Tache
+
+Ecrivez une requete qui retourne les categories eligibles au programme premium :
+- \`category\` : la categorie du produit
+- \`total_revenue\` : le chiffre d'affaires total (quantity * unit_price) pour cette categorie
+- \`total_orders\` : le nombre de commandes distinctes contenant des articles de cette categorie
+
+N'incluez que les categories dont le \`total_revenue\` depasse 1 000.
+
+Triez par \`total_revenue\` DESC.
+
+### Colonnes attendues en sortie
 \`category\`, \`total_revenue\`, \`total_orders\``,
   hint: "GROUP BY category, then use HAVING SUM(quantity * unit_price) > 1000 to filter groups after aggregation. Remember: WHERE filters rows before grouping; HAVING filters groups after aggregation.",
   schema: `CREATE TABLE products (

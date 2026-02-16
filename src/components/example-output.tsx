@@ -1,6 +1,7 @@
 "use client";
 
 import type { Exercise } from "@/lib/exercises/types";
+import { useLocale } from "@/lib/i18n";
 
 interface ExampleOutputProps {
   exercise: Exercise;
@@ -9,6 +10,7 @@ interface ExampleOutputProps {
 const MAX_PREVIEW_ROWS = 3;
 
 export function ExampleOutput({ exercise }: ExampleOutputProps) {
+  const { t } = useLocale();
   const testCase = exercise.testCases[0];
   if (!testCase || testCase.expectedRows.length === 0) return null;
 
@@ -19,7 +21,7 @@ export function ExampleOutput({ exercise }: ExampleOutputProps) {
 
   return (
     <div className="space-y-1.5">
-      <h3 className="text-sm font-semibold">Expected output</h3>
+      <h3 className="text-sm font-semibold">{t("exercise.expectedOutput")}</h3>
       <div className="overflow-x-auto rounded-md border">
         <table className="w-full text-sm">
           <thead className="bg-muted">
@@ -53,7 +55,7 @@ export function ExampleOutput({ exercise }: ExampleOutputProps) {
       </div>
       {totalRows > MAX_PREVIEW_ROWS && (
         <p className="text-xs text-muted-foreground">
-          ({totalRows} rows total)
+          ({totalRows} {t("exercise.rowsTotal")})
         </p>
       )}
     </div>

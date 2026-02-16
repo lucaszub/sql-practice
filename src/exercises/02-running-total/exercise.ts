@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "02-running-total",
   title: "Running Total & Moving Average",
+  titleFr: "Total cumule et moyenne mobile",
   difficulty: "medium",
   category: "window-functions",
   description: `## Running Total & Moving Average
@@ -22,7 +23,25 @@ Given a \`daily_sales\` table, write a query that calculates for each day:
 \`sale_date\`, \`amount\`, \`running_total\`, \`moving_avg_7d\`
 
 Order by sale_date ASC. Round moving_avg_7d to 2 decimal places.`,
+  descriptionFr: `## Total cumule et moyenne mobile
+
+A partir d'une table \`daily_sales\`, ecrivez une requete qui calcule pour chaque jour :
+1. Le **total cumule** du montant des ventes
+2. La **moyenne mobile sur 7 jours** du montant des ventes
+
+### Schema
+
+| Column | Type |
+|--------|------|
+| sale_date | DATE |
+| amount | DECIMAL(10,2) |
+
+### Colonnes attendues en sortie
+\`sale_date\`, \`amount\`, \`running_total\`, \`moving_avg_7d\`
+
+Triez par sale_date ASC. Arrondissez moving_avg_7d a 2 decimales.`,
   hint: "Use SUM(amount) OVER (ORDER BY sale_date ROWS UNBOUNDED PRECEDING) for running total and ROUND(AVG(amount) OVER (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 2) for moving average.",
+  hintFr: "Utilisez SUM(amount) OVER (ORDER BY sale_date ROWS UNBOUNDED PRECEDING) pour le total cumule et ROUND(AVG(amount) OVER (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW), 2) pour la moyenne mobile.",
   schema: `CREATE TABLE daily_sales (
   sale_date DATE,
   amount DECIMAL(10,2)
@@ -62,10 +81,27 @@ ORDER BY sale_date;`,
 - \`ROWS BETWEEN\` defines the window frame
 - \`UNBOUNDED PRECEDING\` = from the start
 - \`6 PRECEDING AND CURRENT ROW\` = sliding window of 7 rows`,
+  solutionExplanationFr: `## Explication
+
+### Total cumule
+\`SUM(amount) OVER (ORDER BY sale_date ROWS UNBOUNDED PRECEDING)\`
+- Additionne toutes les lignes depuis le debut jusqu'a la ligne courante incluse
+- \`ROWS UNBOUNDED PRECEDING\` signifie "depuis la toute premiere ligne"
+
+### Moyenne mobile sur 7 jours
+\`AVG(amount) OVER (ORDER BY sale_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW)\`
+- Calcule la moyenne de la ligne courante et des 6 lignes precedentes (7 au total)
+- Pour les 6 premieres lignes, la moyenne porte sur moins de valeurs (seules les lignes disponibles)
+
+### Concepts cles
+- \`ROWS BETWEEN\` definit la fenetre de calcul
+- \`UNBOUNDED PRECEDING\` = depuis le debut
+- \`6 PRECEDING AND CURRENT ROW\` = fenetre glissante de 7 lignes`,
   testCases: [
     {
       name: "default",
       description: "Running total and moving average for 10 days of sales",
+      descriptionFr: "Total cumule et moyenne mobile pour 10 jours de ventes",
       expectedColumns: ["sale_date", "amount", "running_total", "moving_avg_7d"],
       expectedRows: [
         { sale_date: "2024-01-01", amount: 100.00, running_total: 100.00, moving_avg_7d: 100.00 },
@@ -84,6 +120,7 @@ ORDER BY sale_date;`,
     {
       name: "single-row",
       description: "Works with minimal data",
+      descriptionFr: "Fonctionne avec un minimum de donnees",
       setupSql: `DELETE FROM daily_sales WHERE sale_date > '2024-01-01';`,
       expectedColumns: ["sale_date", "amount", "running_total", "moving_avg_7d"],
       expectedRows: [

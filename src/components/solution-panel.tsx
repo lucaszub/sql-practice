@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { markdownComponents } from "./markdown-components";
+import { useLocale } from "@/lib/i18n";
 
 interface SolutionPanelProps {
   solutionQuery: string;
@@ -16,6 +17,7 @@ export function SolutionPanel({
   solutionQuery,
   solutionExplanation,
 }: SolutionPanelProps) {
+  const { t } = useLocale();
   const [revealed, setRevealed] = useState(false);
 
   if (!revealed) {
@@ -27,7 +29,7 @@ export function SolutionPanel({
         className="w-full"
       >
         <Eye className="mr-1 h-3 w-3" />
-        Reveal Solution
+        {t("exercise.revealSolution")}
       </Button>
     );
   }
@@ -40,10 +42,10 @@ export function SolutionPanel({
         onClick={() => setRevealed(false)}
       >
         <EyeOff className="mr-1 h-3 w-3" />
-        Hide Solution
+        {t("exercise.hideSolution")}
       </Button>
       <div className="rounded-md border bg-muted/30 p-3">
-        <p className="text-xs font-medium text-muted-foreground mb-2">Solution Query</p>
+        <p className="text-xs font-medium text-muted-foreground mb-2">{t("exercise.solutionQuery")}</p>
         <pre className="text-xs font-mono whitespace-pre-wrap overflow-auto">{solutionQuery.trim()}</pre>
       </div>
       <div className="max-w-none">

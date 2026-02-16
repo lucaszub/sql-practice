@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "24-where-vs-having",
   title: "High-Volume Categories Excluding Small Orders",
+  titleFr: "Categories a fort volume hors petites commandes",
   difficulty: "easy",
   category: "aggregation",
   description: `## High-Volume Categories Excluding Small Orders
@@ -36,6 +37,38 @@ Return:
 Order by \`order_count\` DESC, \`category\` ASC.
 
 ### Expected output columns
+\`category\`, \`order_count\`, \`total_revenue\`, \`avg_order_value\``,
+  descriptionFr: `## Categories a fort volume hors petites commandes
+
+L'equipe marketing souhaite identifier les categories ayant **plus de 3 commandes**, en ne comptant que les commandes superieures a 25 $ (en excluant les petits achats de test qui faussent les donnees). Cela permettra d'identifier les categories reellement populaires pour la prochaine campagne publicitaire.
+
+### Schema
+
+**orders**
+| Column | Type |
+|--------|------|
+| order_id | INTEGER |
+| customer_id | INTEGER |
+| order_date | DATE |
+| total_amount | DECIMAL(10,2) |
+| category | VARCHAR |
+
+### Tache
+
+Ecrivez une requete qui :
+1. **Exclut** les commandes dont le \`total_amount\` <= 25 (ce sont des achats de test)
+2. Regroupe les commandes restantes par \`category\`
+3. **Filtre** pour ne garder que les categories ayant plus de 3 commandes eligibles
+
+Retournez :
+- \`category\` : la categorie de la commande
+- \`order_count\` : le nombre de commandes eligibles (superieures a 25 $)
+- \`total_revenue\` : la somme de \`total_amount\` pour les commandes eligibles
+- \`avg_order_value\` : la moyenne de \`total_amount\` pour les commandes eligibles, arrondie a 2 decimales
+
+Triez par \`order_count\` DESC, \`category\` ASC.
+
+### Colonnes attendues en sortie
 \`category\`, \`order_count\`, \`total_revenue\`, \`avg_order_value\``,
   hint: "Use WHERE to filter individual rows (total_amount > 25) BEFORE grouping, then HAVING to filter groups (COUNT(*) > 3) AFTER grouping. WHERE and HAVING work at different stages of query execution.",
   schema: `CREATE TABLE orders (

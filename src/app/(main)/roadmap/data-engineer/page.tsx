@@ -4,8 +4,10 @@ import { useMemo } from "react";
 import { dataEngineerTrack, getModulesByLevel } from "@/lib/exercises/modules";
 import { useProgressStore } from "@/lib/store/progress";
 import { LevelSection } from "@/components/roadmap/level-section";
+import { useLocale } from "@/lib/i18n";
 
 export default function DataEngineerRoadmapPage() {
+  const { t } = useLocale();
   const progress = useProgressStore((s) => s.progress);
 
   const solvedIds = useMemo(() => {
@@ -28,9 +30,9 @@ export default function DataEngineerRoadmapPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold tracking-tight">Data Engineer SQL Roadmap</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t("roadmap.deTitle")}</h1>
         <p className="text-muted-foreground mt-1">
-          From schema design to pipeline SQL, optimization, and data quality
+          {t("roadmap.deSubtitle")}
         </p>
         <div className="mt-4 flex items-center gap-4">
           <div className="h-2 flex-1 max-w-md rounded-full bg-muted overflow-hidden">

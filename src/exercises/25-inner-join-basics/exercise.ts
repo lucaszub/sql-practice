@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "25-inner-join-basics",
   title: "Shipping Labels with Customer Names",
+  titleFr: "Etiquettes d'expedition avec noms des clients",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Shipping Labels with Customer Names
@@ -34,6 +35,35 @@ Write a query that returns every order alongside the customer's full name. Only 
 \`order_id\`, \`first_name\`, \`last_name\`, \`order_date\`, \`total_amount\`, \`shipping_address\`
 
 Order by \`order_id\` ASC.`,
+  descriptionFr: `## Etiquettes d'expedition avec noms des clients
+
+L'equipe logistique a besoin d'une liste de toutes les commandes avec le nom du client associe, afin d'imprimer les etiquettes d'expedition.
+
+Ecrivez une requete qui retourne chaque commande accompagnee du nom complet du client. N'incluez que les commandes ayant un enregistrement client correspondant.
+
+### Schema
+
+**customers**
+| Column | Type |
+|--------|------|
+| customer_id | INTEGER |
+| first_name | VARCHAR |
+| last_name | VARCHAR |
+| email | VARCHAR |
+
+**orders**
+| Column | Type |
+|--------|------|
+| order_id | INTEGER |
+| customer_id | INTEGER |
+| order_date | DATE |
+| total_amount | DECIMAL(10,2) |
+| shipping_address | VARCHAR |
+
+### Colonnes attendues en sortie
+\`order_id\`, \`first_name\`, \`last_name\`, \`order_date\`, \`total_amount\`, \`shipping_address\`
+
+Triez par \`order_id\` ASC.`,
   hint: "Use INNER JOIN to combine the orders table with the customers table on the customer_id column. INNER JOIN only returns rows where a match exists in both tables.",
   schema: `CREATE TABLE customers (
   customer_id INTEGER,

@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "12-in-between-filtering",
   title: "Promotion-Eligible Products",
+  titleFr: "Produits eligibles a la promotion",
   difficulty: "easy",
   category: "select-fundamentals",
   description: `## Promotion-Eligible Products
@@ -28,7 +29,31 @@ Write a query that returns products matching **both** criteria: the category mus
 \`product_id\`, \`product_name\`, \`category\`, \`price\`
 
 Order by \`price\` ASC, then \`product_id\` ASC.`,
+  descriptionFr: `## Produits eligibles a la promotion
+
+L'equipe merchandising prepare une promotion sur les produits de milieu de gamme. Elle a besoin de tous les produits appartenant aux categories **'Electronics'**, **'Books'** ou **'Home & Kitchen'** **et** dont le prix est compris entre **20 $** et **80 $** (bornes incluses).
+
+### Schema
+
+**products**
+| Column | Type |
+|--------|------|
+| product_id | INTEGER |
+| product_name | VARCHAR |
+| category | VARCHAR |
+| price | DECIMAL(10,2) |
+| in_stock | BOOLEAN |
+
+### Consigne
+
+Ecrivez une requete qui renvoie les produits correspondant aux **deux** criteres : la categorie doit figurer parmi les trois listees ci-dessus, et le prix doit se situer dans la fourchette 20 $-80 $ (bornes incluses des deux cotes).
+
+### Colonnes attendues en sortie
+\`product_id\`, \`product_name\`, \`category\`, \`price\`
+
+Triez par \`price\` croissant (ASC), puis par \`product_id\` croissant (ASC).`,
   hint: "Use the IN operator to check membership in a list of categories, and BETWEEN to check a range. Combine them with AND.",
+  hintFr: "Utilisez l'operateur IN pour verifier l'appartenance a une liste de categories, et BETWEEN pour verifier une fourchette de prix. Combinez-les avec AND.",
   schema: `CREATE TABLE products (
   product_id INTEGER,
   product_name VARCHAR,

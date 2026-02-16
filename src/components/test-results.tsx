@@ -2,6 +2,7 @@
 
 import { CheckCircle2, XCircle, AlertCircle } from "lucide-react";
 import type { ValidationResult, TestCase } from "@/lib/exercises/types";
+import { useLocale } from "@/lib/i18n";
 
 interface TestResultsProps {
   results: ValidationResult[];
@@ -9,11 +10,13 @@ interface TestResultsProps {
 }
 
 export function TestResults({ results, testCases }: TestResultsProps) {
+  const { t } = useLocale();
+
   if (results.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-muted-foreground gap-2">
         <AlertCircle className="h-5 w-5" />
-        <p className="text-sm">Submit your query to see test results</p>
+        <p className="text-sm">{t("test.submitToSee")}</p>
       </div>
     );
   }
@@ -39,12 +42,12 @@ export function TestResults({ results, testCases }: TestResultsProps) {
         <div>
           <p className="text-sm font-semibold">
             {allPassed
-              ? "All tests passed!"
-              : `${passedCount}/${results.length} tests passed`}
+              ? t("test.allPassed")
+              : `${passedCount}/${results.length} ${t("test.testsPassed")}`}
           </p>
           {allPassed && (
             <p className="text-xs text-muted-foreground mt-0.5">
-              Great job! Move on to the next exercise.
+              {t("test.greatJob")}
             </p>
           )}
         </div>
@@ -79,18 +82,18 @@ export function TestResults({ results, testCases }: TestResultsProps) {
                       {r.columnMismatch && (
                         <div className="text-xs space-y-1 bg-background/80 rounded p-2 font-mono">
                           <p>
-                            <span className="text-muted-foreground">Expected columns: </span>
+                            <span className="text-muted-foreground">{t("test.expectedColumns")} </span>
                             {r.columnMismatch.expected.join(", ")}
                           </p>
                           <p>
-                            <span className="text-muted-foreground">Got columns: </span>
+                            <span className="text-muted-foreground">{t("test.gotColumns")} </span>
                             {r.columnMismatch.actual.join(", ")}
                           </p>
                         </div>
                       )}
                       {r.missingRows && r.missingRows.length > 0 && (
                         <div className="text-xs bg-background/80 rounded p-2">
-                          <p className="text-muted-foreground mb-1">Expected row:</p>
+                          <p className="text-muted-foreground mb-1">{t("test.expectedRow")}</p>
                           <pre className="font-mono text-[11px] whitespace-pre-wrap overflow-auto">
                             {JSON.stringify(r.missingRows[0], null, 2)}
                           </pre>
@@ -98,7 +101,7 @@ export function TestResults({ results, testCases }: TestResultsProps) {
                       )}
                       {r.extraRows && r.extraRows.length > 0 && (
                         <div className="text-xs bg-background/80 rounded p-2">
-                          <p className="text-muted-foreground mb-1">Got instead:</p>
+                          <p className="text-muted-foreground mb-1">{t("test.gotInstead")}</p>
                           <pre className="font-mono text-[11px] whitespace-pre-wrap overflow-auto">
                             {JSON.stringify(r.extraRows[0], null, 2)}
                           </pre>

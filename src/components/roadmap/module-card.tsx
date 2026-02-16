@@ -6,6 +6,7 @@ import { ChevronDown, ChevronRight, CheckCircle2, Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { ProgressRing } from "./progress-ring";
 import type { Module } from "@/lib/exercises/modules";
+import { useLocale } from "@/lib/i18n";
 
 type ModuleStatus = "not-started" | "in-progress" | "complete" | "locked" | "coming-soon";
 
@@ -18,13 +19,14 @@ interface ModuleCardProps {
 
 export function ModuleCard({ module, status, solvedIds, progress }: ModuleCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const { t } = useLocale();
 
   const statusConfig: Record<ModuleStatus, { label: string; className: string }> = {
-    "not-started": { label: "Not Started", className: "bg-muted text-muted-foreground" },
-    "in-progress": { label: "In Progress", className: "bg-blue-500/10 text-blue-500" },
-    "complete": { label: "Complete", className: "bg-green-500/10 text-green-500" },
-    "locked": { label: "Locked", className: "bg-muted text-muted-foreground" },
-    "coming-soon": { label: "Coming Soon", className: "bg-muted text-muted-foreground" },
+    "not-started": { label: t("status.notStarted"), className: "bg-muted text-muted-foreground" },
+    "in-progress": { label: t("status.inProgress"), className: "bg-blue-500/10 text-blue-500" },
+    "complete": { label: t("status.complete"), className: "bg-green-500/10 text-green-500" },
+    "locked": { label: t("status.locked"), className: "bg-muted text-muted-foreground" },
+    "coming-soon": { label: t("status.comingSoon"), className: "bg-muted text-muted-foreground" },
   };
 
   const isInteractive = status !== "locked" && status !== "coming-soon";
@@ -93,7 +95,7 @@ export function ModuleCard({ module, status, solvedIds, progress }: ModuleCardPr
             );
           })}
           <div className="text-[10px] text-muted-foreground pt-1">
-            {progress.solved}/{progress.total} completed
+            {progress.solved}/{progress.total} {t("roadmap.completed")}
           </div>
         </div>
       )}

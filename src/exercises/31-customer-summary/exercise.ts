@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "31-customer-summary",
   title: "Customer Summary Report",
+  titleFr: "Rapport de synthese clients",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Customer Summary Report
@@ -39,7 +40,42 @@ Include **all** customers, even those who have never placed an order. For custom
 \`customer_id\`, \`first_name\`, \`last_name\`, \`order_count\`, \`total_spent\`, \`last_order_date\`
 
 Order by \`total_spent\` DESC, \`customer_id\` ASC.`,
+  descriptionFr: `## Rapport de synthese clients
+
+La direction a demande un rapport de synthese clients pour la revue trimestrielle de l'activite. Pour chaque client, le rapport doit afficher :
+
+- Le nom du client
+- Le nombre total de commandes
+- Le montant total depense
+- La date de la commande la plus recente
+
+Incluez **tous** les clients, meme ceux qui n'ont jamais passe de commande. Pour les clients sans commande, affichez \`0\` pour le nombre de commandes, \`0\` pour le total depense et \`NULL\` pour la date de derniere commande.
+
+### Schema
+
+**customers**
+| Column | Type |
+|--------|------|
+| customer_id | INTEGER |
+| first_name | VARCHAR |
+| last_name | VARCHAR |
+| email | VARCHAR |
+| signup_date | DATE |
+
+**orders**
+| Column | Type |
+|--------|------|
+| order_id | INTEGER |
+| customer_id | INTEGER |
+| order_date | DATE |
+| total_amount | DECIMAL(10,2) |
+
+### Colonnes attendues en sortie
+\`customer_id\`, \`first_name\`, \`last_name\`, \`order_count\`, \`total_spent\`, \`last_order_date\`
+
+Triez par \`total_spent\` DESC, \`customer_id\` ASC.`,
   hint: "Use LEFT JOIN to include all customers. Then use COUNT(o.order_id) for order count (not COUNT(*)), COALESCE(SUM(o.total_amount), 0) for total spent, and MAX(o.order_date) for the most recent order date.",
+  hintFr: "Utilisez LEFT JOIN pour inclure tous les clients. Puis utilisez COUNT(o.order_id) pour le nombre de commandes (et non COUNT(*)), COALESCE(SUM(o.total_amount), 0) pour le total depense, et MAX(o.order_date) pour la date de commande la plus recente.",
   schema: `CREATE TABLE customers (
   customer_id INTEGER,
   first_name VARCHAR,
@@ -112,10 +148,34 @@ This exercise combines several concepts into one practical report: LEFT JOIN, CO
 - Executive dashboards and business review reports
 - Customer 360 views that aggregate multiple metrics
 - Any summary that must include all entities regardless of activity level`,
+  solutionExplanationFr: `## Explication
+
+### Patron : Synthese multi-concepts (LEFT JOIN + agregations multiples)
+
+Cet exercice combine plusieurs concepts en un rapport pratique : LEFT JOIN, COUNT, SUM, MAX, COALESCE et GROUP BY.
+
+### Etape par etape
+1. **LEFT JOIN orders o ON c.customer_id = o.customer_id** : Inclut tous les clients, meme ceux sans commande (Grace et Hank).
+2. **COUNT(o.order_id) AS order_count** : Compte les order_id non NULL. Renvoie 0 pour les clients sans commande.
+3. **COALESCE(SUM(o.total_amount), 0) AS total_spent** : Additionne tous les montants de commande par client. \`COALESCE(..., 0)\` convertit le resultat NULL (pour les clients sans commande) en 0.
+4. **MAX(o.order_date) AS last_order_date** : Recupere la date de commande la plus recente. Renvoie NULL pour les clients sans commande, ce qui est le comportement souhaite.
+5. **GROUP BY colonnes d'identite client** : Produit une ligne de synthese par client.
+6. **ORDER BY total_spent DESC, customer_id ASC** : Les plus gros depensiers en premier ; les egalites sont departages par l'identifiant client.
+
+### Pourquoi COALESCE pour SUM mais pas pour MAX ?
+- **SUM** : L'exigence metier demande d'afficher \`0\` pour le total depense. Sans COALESCE, SUM sur zero ligne renvoie NULL.
+- **MAX** : L'exigence metier demande d'afficher \`NULL\` pour la date de derniere commande lorsqu'il n'y a pas de commande. NULL represente correctement « aucune date n'existe ».
+- **COUNT(o.order_id)** : Renvoie deja 0 en l'absence de correspondance -- pas besoin de COALESCE.
+
+### Quand l'utiliser
+- Tableaux de bord pour la direction et rapports de revue d'activite
+- Vues client 360 qui agregent plusieurs indicateurs
+- Toute synthese devant inclure toutes les entites, quel que soit leur niveau d'activite`,
   testCases: [
     {
       name: "default",
       description: "Complete customer summary with all metrics, including zero-order customers",
+      descriptionFr: "Synthese complete des clients avec tous les indicateurs, y compris les clients sans commande",
       expectedColumns: ["customer_id", "first_name", "last_name", "order_count", "total_spent", "last_order_date"],
       expectedRows: [
         { customer_id: 1, first_name: "Alice", last_name: "Martin", order_count: 4, total_spent: 500.50, last_order_date: "2024-03-28" },
@@ -132,6 +192,7 @@ This exercise combines several concepts into one practical report: LEFT JOIN, CO
     {
       name: "new-customer-first-order",
       description: "A previously inactive customer places their first order",
+      descriptionFr: "Un client precedemment inactif passe sa premiere commande",
       setupSql: `INSERT INTO orders VALUES (113, 7, '2024-04-01', 199.99);`,
       expectedColumns: ["customer_id", "first_name", "last_name", "order_count", "total_spent", "last_order_date"],
       expectedRows: [

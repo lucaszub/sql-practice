@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { useLocale, useLocaleStore } from "@/lib/i18n";
 
 interface ActivityGraphProps {
   /** Set of "YYYY-MM-DD" date strings with activity */
@@ -15,6 +16,9 @@ const CELL_GAP = 3;
 const CELL_STEP = CELL_SIZE + CELL_GAP;
 
 export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) {
+  const { t } = useLocale();
+  const locale = useLocaleStore((s) => s.locale);
+
   const { grid, monthLabels } = useMemo(() => {
     const activitySet = new Set(activityDays);
     const today = new Date();
@@ -40,7 +44,7 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
       // Month labels
       const month = cursor.getMonth();
       if (month !== lastMonth) {
-        const monthName = cursor.toLocaleDateString("en", { month: "short" });
+        const monthName = cursor.toLocaleDateString(locale, { month: "short" });
         months.push({ label: monthName, col });
         lastMonth = month;
       }
@@ -56,7 +60,7 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
     }
 
     return { grid: cells, monthLabels: months };
-  }, [activityDays, weeks]);
+  }, [activityDays, weeks, locale]);
 
   const svgWidth = weeks * CELL_STEP + 30;
   const svgHeight = 7 * CELL_STEP + 20;
@@ -86,10 +90,10 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs text-muted-foreground">
-          {activityDays.length} active day{activityDays.length !== 1 ? "s" : ""}
+          {activityDays.length} {t("activity.activeDays")}
           {streakDays > 0 && (
             <span className="ml-2 text-orange-500 font-medium">
-              {streakDays} day streak
+              {streakDays} {t("activity.dayStreak")}
             </span>
           )}
         </p>

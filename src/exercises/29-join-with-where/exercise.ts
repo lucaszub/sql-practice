@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "29-join-with-where",
   title: "Premium Customer Recent Orders",
+  titleFr: "Commandes recentes des clients premium",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Premium Customer Recent Orders

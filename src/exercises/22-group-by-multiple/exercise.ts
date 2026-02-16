@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "22-group-by-multiple",
   title: "Order Counts by Country and Month",
+  titleFr: "Nombre de commandes par pays et par mois",
   difficulty: "easy",
   category: "aggregation",
   description: `## Order Counts by Country and Month
@@ -37,6 +38,39 @@ Write a query that returns:
 Order by \`country\` ASC, \`order_month\` ASC.
 
 ### Expected output columns
+\`country\`, \`order_month\`, \`order_count\`, \`total_revenue\``,
+  descriptionFr: `## Nombre de commandes par pays et par mois
+
+L'equipe analytique a besoin du **nombre de commandes ventile par pays et par mois** pour le rapport trimestriel. Cette ventilation bidimensionnelle permettra de reveler quels marches sont en croissance et lesquels sont saisonniers.
+
+### Schema
+
+**customers**
+| Column | Type |
+|--------|------|
+| customer_id | INTEGER |
+| customer_name | VARCHAR |
+| country | VARCHAR |
+
+**orders**
+| Column | Type |
+|--------|------|
+| order_id | INTEGER |
+| customer_id | INTEGER |
+| order_date | DATE |
+| total_amount | DECIMAL(10,2) |
+
+### Tache
+
+Ecrivez une requete qui retourne :
+- \`country\` : le pays du client
+- \`order_month\` : le mois extrait de \`order_date\` (sous forme d'entier)
+- \`order_count\` : le nombre de commandes pour cette combinaison pays-mois
+- \`total_revenue\` : la somme de \`total_amount\` pour cette combinaison pays-mois
+
+Triez par \`country\` ASC, \`order_month\` ASC.
+
+### Colonnes attendues en sortie
 \`country\`, \`order_month\`, \`order_count\`, \`total_revenue\``,
   hint: "JOIN customers and orders, then GROUP BY country and EXTRACT(MONTH FROM order_date). Use COUNT(*) for order count and SUM() for revenue.",
   schema: `CREATE TABLE customers (

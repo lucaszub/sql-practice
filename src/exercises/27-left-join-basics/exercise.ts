@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "27-left-join-basics",
   title: "Customer Order Count Including Inactive",
+  titleFr: "Nombre de commandes par client, y compris les inactifs",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Customer Order Count Including Inactive

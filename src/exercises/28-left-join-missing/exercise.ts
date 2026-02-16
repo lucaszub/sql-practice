@@ -3,6 +3,7 @@ import type { Exercise } from "@/lib/exercises/types";
 export const exercise: Exercise = {
   id: "28-left-join-missing",
   title: "Find Products Never Ordered",
+  titleFr: "Trouver les produits jamais commandes",
   difficulty: "easy",
   category: "basic-joins",
   description: `## Find Products Never Ordered

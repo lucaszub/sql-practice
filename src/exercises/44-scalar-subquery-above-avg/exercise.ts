@@ -90,7 +90,7 @@ You cannot use \`WHERE amount > AVG(amount)\` directly because aggregate functio
     },
     {
       name: "higher-average",
-      description: "After removing low-value invoices, the average rises and fewer invoices qualify",
+      description: "After removing low-value invoices, the average rises to 1825.00 and only 4 invoices qualify",
       setupSql: `DELETE FROM invoices WHERE amount < 500;`,
       expectedColumns: ["invoice_id", "customer_name", "amount", "plan_tier"],
       expectedRows: [
@@ -98,7 +98,6 @@ You cannot use \`WHERE amount > AVG(amount)\` directly because aggregate functio
         { invoice_id: 4, customer_name: "Delta Co", amount: 3500.00, plan_tier: "Enterprise" },
         { invoice_id: 1, customer_name: "Acme Corp", amount: 2500.00, plan_tier: "Enterprise" },
         { invoice_id: 11, customer_name: "Lambda Corp", amount: 2200.00, plan_tier: "Enterprise" },
-        { invoice_id: 10, customer_name: "Kappa Ltd", amount: 1800.00, plan_tier: "Professional" },
       ],
       orderMatters: true,
     },

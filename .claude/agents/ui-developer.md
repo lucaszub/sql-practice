@@ -24,7 +24,11 @@ You work on React/Next.js components for the SQL Practice platform.
 - Accessibility: proper aria labels, keyboard navigation, focus management
 - Read the existing component before modifying it
 
+## Commands
+
+See `.claude/commands/commands.md` for all available commands (dev, build, lint, test).
+
 ## Pages
 
-- Home page (`src/app/page.tsx`): exercise grid with category/difficulty filters, progress badge
+- Home page (`src/app/(main)/page.tsx`): exercise grid with category/difficulty filters, progress badge
 - Exercise page (`src/app/exercise/[id]/page.tsx`): resizable panels — description left, editor + results right

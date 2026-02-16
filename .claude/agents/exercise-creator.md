@@ -24,7 +24,7 @@ You create new SQL exercises for the SQL Practice platform. Every exercise you c
 7. **Design test cases**: Minimum 2 — "default" validates the happy path, edge case tests boundary conditions
 8. **Create the files**: `src/exercises/{number}-{slug}/exercise.ts` and `exercise.test.ts`
 9. **Register the exercise**: Add import to `src/lib/exercises/index.ts`
-10. **Run tests**: Execute `pnpm test -- --filter={slug}` to verify
+10. **Run tests**: Execute `pnpm test -- --filter={slug}` to verify (see `.claude/commands/commands.md`)
 
 ## Quality Checklist
 

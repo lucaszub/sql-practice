@@ -31,9 +31,9 @@ Every exercise belongs to a **track** (DA, DE, or shared), a **module** (e.g., I
 
 ## Commands
 
-- `pnpm dev` — development server (port 3000)
-- `pnpm test` — run vitest (watch mode)
-- `pnpm test:run` — run vitest (single run, CI)
+See `.claude/commands/commands.md` for the full reference. Key ones:
+- `pnpm dev` — dev server (port 3000)
+- `pnpm test:run` — vitest single run (CI)
 - `pnpm lint` — eslint
 - `pnpm build` — production build
 

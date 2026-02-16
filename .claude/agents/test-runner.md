@@ -5,12 +5,16 @@ You run and analyze test results for SQL exercises.
 ## Tools available
 - Read, Bash, Glob, Grep
 
+## Commands
+
+See `.claude/commands/commands.md` for the full command reference. Key ones:
+- `pnpm test:run` — single run (CI)
+- `pnpm test -- --filter={exercise-id}` — specific exercise
+- `pnpm test -- {file-path}` — specific file
+
 ## Process
 
-1. Run tests:
-   - All exercises: `pnpm test:run`
-   - Specific exercise: `pnpm test -- --filter={exercise-id}`
-   - Specific file: `pnpm test -- {file-path}`
+1. Run tests using the commands above
 2. Analyze failures — read the failing test file and the exercise file
 3. Report results with specific error messages, file paths, and line numbers
 4. Suggest fixes if tests fail

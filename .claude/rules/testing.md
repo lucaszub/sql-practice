@@ -49,6 +49,7 @@ describe(exercise.title, () => {
 
 ## Commands
 
+See `.claude/commands/commands.md` for all commands. Key testing ones:
 - `pnpm test` — watch mode (development)
 - `pnpm test:run` — single run (CI, pre-commit)
-- `pnpm test -- --filter={exercise-id}` — run specific exercise tests
+- `pnpm test -- --filter={exercise-id}` — specific exercise tests

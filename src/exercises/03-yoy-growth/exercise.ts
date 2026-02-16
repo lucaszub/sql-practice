@@ -97,6 +97,7 @@ ORDER BY year, month;`,
     {
       name: "handles-null",
       description: "First year has NULL for prev_year and growth",
+      setupSql: `DELETE FROM monthly_revenue WHERE year > 2022;`,
       expectedColumns: ["year", "month", "revenue", "prev_year_revenue", "yoy_growth_pct"],
       expectedRows: [
         { year: 2022, month: 1, revenue: 10000.00, prev_year_revenue: null, yoy_growth_pct: null },

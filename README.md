@@ -14,6 +14,9 @@ SQL today. Pandas tomorrow. Zero setup — runs entirely in your browser.
 
 ---
 
+<img width="1878" height="1017" alt="image" src="https://github.com/user-attachments/assets/7add8fac-89bc-472d-8133-d385c20c3b19" />
+
+
 ## What is PracticeData?
 
 PracticeData is an open-source, browser-based platform for practicing real-world data skills. No database to install, no environment to configure — just open the app and start writing queries.

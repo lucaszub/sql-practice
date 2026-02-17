@@ -6,6 +6,32 @@ paths:
 
 # Testing Rules
 
+## Branch-Aware Testing Strategy
+
+IMPORTANT: The testing approach depends on the context. Follow these rules strictly.
+
+### On a feature branch (≠ main)
+
+1. **Always test the core engine** — `src/lib/db/` and `src/lib/exercises/` are critical and must be validated on every run
+2. **Only test NEW exercises** — use `git diff --name-only origin/main...HEAD -- 'src/exercises/'` to detect what changed
+3. **Do NOT retest exercises already in main** — they are considered validated
+4. **If core engine files changed** (`src/lib/db/`, `src/lib/exercises/`), run full regression because engine changes can break any exercise
+
+### On main (post-merge or direct commit)
+
+- Tests only need to run if explicitly requested
+- Full regression is appropriate here since this is the integration point
+
+### Full regression triggers
+
+Full `pnpm test:run` is only needed when:
+- Core engine or validation utilities were modified
+- Before production deployment or release
+- Before a demo or presentation
+- Explicitly requested by the user
+
+---
+
 ## Exercise Tests
 
 Each `exercise.test.ts` MUST verify:
@@ -53,3 +79,5 @@ See `.claude/commands/commands.md` for all commands. Key testing ones:
 - `pnpm test` — watch mode (development)
 - `pnpm test:run` — single run (CI, pre-commit)
 - `pnpm test -- --filter={exercise-id}` — specific exercise tests
+- `pnpm test -- src/lib/db/` — core engine tests only
+- `pnpm test -- src/lib/exercises/` — registry tests only

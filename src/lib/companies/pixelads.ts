@@ -623,9 +623,9 @@ LIMIT 5;`,
       stakeholderRole: "Head of Performance",
       difficulty: "hard",
       description:
-        "Sarah (Head of Performance) wants to flag campaigns that have received impressions but generated zero conversions -- potential budget waste. Show campaign name, client name, channel name, total impressions, total clicks, and total cost. Include campaigns with zero clicks (cost = 0). Sort by impressions descending.",
+        "Sarah (Head of Performance) wants to flag campaigns that have received impressions but generated zero conversions -- potential budget waste. Show campaign name, client name, channel name, total impressions, total clicks, and total cost. Include campaigns with zero clicks (cost = 0). Sort by impressions descending, then campaign name ascending.",
       descriptionFr:
-        "Sarah (Head of Performance) veut identifier les campagnes qui ont reçu des impressions mais généré zéro conversion -- potentiel gaspillage de budget. Affiche le nom de la campagne, le nom du client, le canal, le total d'impressions, le total de clics et le coût total. Inclure les campagnes avec zéro clic (coût = 0). Trie par impressions décroissant.",
+        "Sarah (Head of Performance) veut identifier les campagnes qui ont reçu des impressions mais généré zéro conversion -- potentiel gaspillage de budget. Affiche le nom de la campagne, le nom du client, le canal, le total d'impressions, le total de clics et le coût total. Inclure les campagnes avec zéro clic (coût = 0). Trie par impressions décroissant, puis nom de campagne croissant.",
       hint: "JOIN campaigns with impressions (to ensure impressions exist). LEFT JOIN with a clicks subquery and LEFT JOIN with conversions. Filter WHERE conversions.campaign_id IS NULL.",
       hintFr: "JOIN campaigns avec impressions (pour s'assurer qu'il y a des impressions). LEFT JOIN avec une sous-requête clicks et LEFT JOIN avec conversions. Filtre WHERE conversions.campaign_id IS NULL.",
       solutionQuery: `SELECT
@@ -647,7 +647,7 @@ LEFT JOIN (
 LEFT JOIN conversions cv ON c.campaign_id = cv.campaign_id
 WHERE cv.campaign_id IS NULL
 GROUP BY c.campaign_name, cl.client_name, ch.channel_name, ck_agg.total_clicks, ck_agg.total_cost
-ORDER BY total_impressions DESC;`,
+ORDER BY total_impressions DESC, c.campaign_name;`,
       expectedColumns: ["campaign_name", "client_name", "channel_name", "total_impressions", "total_clicks", "total_cost"],
       expectedRows: [
         { campaign_name: "BioMarché - Meta Awareness", client_name: "BioMarché", channel_name: "Meta Ads", total_impressions: 83000, total_clicks: 1660, total_cost: 996.00 },

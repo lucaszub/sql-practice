@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Circle, ChevronDown, ChevronRight, Database } from "lucide-react";
+import { CheckCircle2, Circle, ChevronDown, ChevronRight, Database, Building2, ChevronRightIcon } from "lucide-react";
 import { exercises, getExercise } from "@/lib/exercises";
 import { dataAnalystTrack, dataEngineerTrack } from "@/lib/exercises/modules";
 import { useProgressStore } from "@/lib/store/progress";
@@ -100,6 +100,14 @@ export default function HomePage() {
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {t("home.subtitle")}
         </p>
+        <Link
+          href="/companies"
+          className="inline-flex items-center gap-2 rounded-full border border-amber-300/60 bg-amber-50/80 px-4 py-1.5 text-sm text-amber-800 hover:bg-amber-100 hover:border-amber-400/70 dark:border-amber-500/30 dark:bg-amber-950/40 dark:text-amber-300 dark:hover:bg-amber-950/60 dark:hover:border-amber-500/50 transition-colors"
+        >
+          <Building2 className="h-4 w-4" />
+          <span>{t("home.companyCta")}</span>
+          <ChevronRightIcon className="h-3 w-3" />
+        </Link>
       </div>
 
       {/* ── Stats + Activity Graph ────────────────────────── */}

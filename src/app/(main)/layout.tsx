@@ -27,6 +27,9 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
             <Link href="/roadmap/data-engineer" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               {t("nav.deRoadmap")}
             </Link>
+            <Link href="/companies" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              {t("nav.company")}
+            </Link>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleLocale} title={locale === "en" ? "Passer en français" : "Switch to English"}>
               <Languages className="h-4 w-4" />
             </Button>

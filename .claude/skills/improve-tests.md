@@ -1,75 +1,168 @@
 ---
 name: improve-tests
-description: Analyze and improve test quality for one or all exercises
+description: Verify exercise solutions against ALL test cases using native DuckDB, diagnose and fix mismatches
 user_invocable: true
-argument-hint: "[exercise-id] (optional — omit to audit all exercises)"
+argument-hint: "[exercise-id] (optional — omit to verify all exercises)"
 ---
 
 # improve-tests
 
-Audits exercise tests and improves their quality, coverage, and robustness.
+Verifies that every exercise's `solutionQuery` actually produces the correct `expectedRows` for ALL test cases by running them against native DuckDB. Diagnoses and fixes any mismatches.
 
 ## Arguments
 
-- `$ARGUMENTS[0]` — (optional) Exercise ID to audit. If omitted, audits all exercises.
+- `$ARGUMENTS[0]` — (optional) Exercise ID (e.g., `11-select-where-basics`). If omitted, verifies all exercises.
 
-## Audit Criteria
+## Why This Skill Exists
 
-For each exercise, check:
+The unit tests (`exercise.test.ts`) are boilerplate — they only pass the *expected* data through the validator, they never actually run the SQL. The integration test (`exercises.integration.test.ts`) only checks `testCases[0]`. This skill fills the gap: run the solution against DuckDB for **every** test case and fix discrepancies.
 
-### 1. Structure completeness
-- [ ] Has `exercise.test.ts` file
-- [ ] Tests structure validity (id format, title, min 2 test cases, schema, solution)
-- [ ] Tests solution correctness against ALL test cases (not just the first)
-- [ ] Tests wrong answer rejection (at least 1 intentionally wrong query)
+## Workflow
 
-### 2. Test case quality
-- [ ] Minimum 2 test cases: "default" (happy path) + at least 1 edge case
-- [ ] Edge cases cover: NULLs, empty results, ties, boundary values, single-row tables
-- [ ] If `orderMatters: true` — test with intentionally wrong order
-- [ ] If aggregations — test with groups that produce 0 or 1 row
-- [ ] If JOINs — test with unmatched rows (LEFT JOIN null scenario)
-- [ ] If window functions — test with partition containing a single row
+### Phase 1: Identify target exercises
 
-### 3. Wrong answer tests
-- [ ] At least one wrong query that returns wrong columns
-- [ ] At least one wrong query that returns wrong row count or wrong values
-- [ ] Wrong queries should be plausible mistakes (common SQL errors), not random nonsense
+1. If an exercise ID was provided, find `src/exercises/{id}/exercise.ts`
+2. If no ID, list all `src/exercises/*/exercise.ts`
 
-### 4. Data robustness
-- [ ] Schema data includes NULLs in nullable columns
-- [ ] Schema data includes edge case values (0, empty strings, dates at boundaries)
-- [ ] setupSql in test cases modifies data meaningfully (not just adding identical rows)
+### Phase 2: Run integration test first (quick smoke test)
 
-## Process
+Run the existing integration test to get a baseline:
 
-1. **Scan**: List all exercises or find the target exercise
-2. **Audit**: For each exercise, read `exercise.ts` and `exercise.test.ts`, check all criteria
-3. **Report**: List issues found per exercise, sorted by severity
-4. **Fix**: For each issue, apply the fix:
-   - Add missing test cases
-   - Add missing wrong answer tests
-   - Add edge case data to schema or setupSql
-   - Improve test descriptions
-5. **Verify**: Run `pnpm test -- --filter={exercise-id}` for each modified exercise
+```bash
+# Single exercise:
+pnpm test:integration -- --reporter=verbose 2>&1 | grep -E "(PASS|FAIL|✓|×|❌)" | head -30
+
+# Or for a specific exercise, just read the output:
+pnpm test:integration -- --reporter=verbose
+```
+
+If the integration test passes for an exercise, its `testCases[0]` is already correct. Move on to testing other test cases.
+
+### Phase 3: Verify ALL test cases (the core workflow)
+
+For each target exercise, for each test case (`testCases[0]`, `testCases[1]`, ...):
+
+**Step 1 — Read the exercise file** to understand schema, solutionQuery, and all test cases.
+
+**Step 2 — Build a verification SQL script** and run it. For each test case, create a script that:
+
+```sql
+-- 1. Set up the schema
+{exercise.schema}
+
+-- 2. Apply test case setupSql (if any)
+{testCase.setupSql ?? ''}
+
+-- 3. Run the solution query
+{exercise.solutionQuery}
+```
+
+Run this via `pnpm test:integration` or a one-off Node.js DuckDB script:
+
+```bash
+node -e "
+const duckdb = require('duckdb');
+const db = new duckdb.Database(':memory:');
+const schema = \`SCHEMA_SQL_HERE\`;
+const setupSql = \`SETUP_SQL_HERE\`;
+const solution = \`SOLUTION_SQL_HERE\`;
+db.exec(schema, (err) => {
+  if (err) { console.error('Schema error:', err); process.exit(1); }
+  const next = setupSql ? () => db.exec(setupSql, runQuery) : runQuery;
+  function runQuery(err) {
+    if (err) { console.error('Setup error:', err); process.exit(1); }
+    db.all(solution, (err, rows) => {
+      if (err) { console.error('Query error:', err); process.exit(1); }
+      console.log(JSON.stringify(rows, (k,v) => typeof v === 'bigint' ? Number(v) : v, 2));
+      db.close();
+    });
+  }
+  next();
+});
+"
+```
+
+**Step 3 — Compare actual output vs expectedRows**
+
+For each test case, compare:
+- **Column names**: actual column names (from query output) vs `testCase.expectedColumns`
+- **Row count**: actual row count vs `testCase.expectedRows.length`
+- **Row values**: each row's values, accounting for:
+  - DATE columns: DuckDB returns JS Date objects → format as `"YYYY-MM-DD"`
+  - TIMESTAMP columns: format as `"YYYY-MM-DD HH:MM:SS"`
+  - BIGINT: convert to Number
+  - DECIMAL: should already be number
+  - Float tolerance: ±0.0001
+  - NULL: must match exactly
+
+### Phase 4: Diagnose mismatches
+
+When actual output ≠ expected output, determine the root cause:
+
+**Decision tree:**
+
+1. **Column mismatch** → The solutionQuery uses wrong aliases. Fix the `SELECT ... AS` clauses.
+
+2. **Row count mismatch** →
+   - If actual has MORE rows → solutionQuery is missing a WHERE/HAVING filter, or test data has rows the expected doesn't account for
+   - If actual has FEWER rows → solutionQuery over-filters, or setupSql doesn't insert enough data
+
+3. **Value mismatch** →
+   - **Rounding issue**: Expected has `185.71` but actual is `185.714...` → Fix expectedRows to use correct rounding (ROUND in query or correct decimal in expected)
+   - **Sort order issue**: Rows are correct but in wrong order → Check `orderMatters` flag. If true, fix the ORDER BY. If false, no issue.
+   - **Date format issue**: Expected has `"2024-01-01"` but actual is `"2024-01-01 00:00:00"` → The validator normalizes midnight timestamps, but double-check
+   - **Calculation error in expectedRows**: The human who wrote the expected data did the math wrong → Fix the expectedRows to match what the correct SQL actually produces
+   - **Bug in solutionQuery**: The SQL logic is wrong → Fix the solutionQuery
+
+**Key principle**: The `solutionQuery` is the **source of truth** for the SQL logic. If the query is correct SQL that answers the business question, then `expectedRows` must match it. Only fix the solutionQuery if it genuinely doesn't answer the exercise's business question.
+
+### Phase 5: Apply fixes
+
+Based on diagnosis:
+
+1. **Fix expectedRows** (most common): Update the test case's `expectedRows` array in `exercise.ts` to match what the correct solutionQuery actually returns
+2. **Fix solutionQuery** (rare): Only if the SQL logic is genuinely wrong
+3. **Fix schema data** (rare): Only if the INSERT data has errors that make the exercise unsolvable
+4. **Fix setupSql** (for non-default test cases): Ensure it creates the right scenario
+
+### Phase 6: Re-verify
+
+After every fix, re-run Phase 3 for that exercise to confirm all test cases pass:
+
+```bash
+pnpm test:integration -- --reporter=verbose
+```
+
+Also run the unit tests:
+
+```bash
+pnpm test -- src/exercises/{id}/exercise.test.ts
+```
+
+### Phase 7: Report
+
+For each exercise, report:
+
+```
+Exercise ID     | Test Case  | Status | Issue (if any)               | Fix Applied
+----------------|------------|--------|------------------------------|------------------
+11-select-where | default    | PASS   | —                            | —
+11-select-where | edge-null  | FAIL→FIX | expectedRows had wrong sum | Fixed row 3: 185.71 → 171.43
+```
+
+## Common Pitfalls
+
+1. **Don't trust expectedRows blindly** — they were written by hand and may have calculation errors. Always run the SQL to get actual values.
+2. **Multiple test cases share the same solutionQuery** — if testCase[1] has `setupSql` that modifies data, the same solution must work on modified data too.
+3. **DuckDB date handling**: Native Node DuckDB returns JS Date objects. Format them before comparing: midnight → `"YYYY-MM-DD"`, with time → `"YYYY-MM-DD HH:MM:SS"`.
+4. **Float rounding**: Use `ROUND(value, 2)` in SQL. Compare with ±0.0001 tolerance. If the expected says `185.71`, the query must `ROUND(..., 2)`.
+5. **ORDER BY determinism**: If `orderMatters: true`, make sure ORDER BY has a tiebreaker column to be deterministic.
+6. **Case sensitivity**: DuckDB column names are case-insensitive. The validator lowercases everything. But be consistent.
 
 ## Commands Reference
 
-See `.claude/commands/commands.md` for available pnpm commands.
-
-## Severity Levels
-
-- **Critical**: No test file, solution not tested, or zero wrong answer tests
-- **High**: Only 1 test case, missing edge case coverage
-- **Medium**: Wrong answer tests too trivial, setupSql not used when needed
-- **Low**: Test descriptions could be more descriptive
-
-## Output
-
-Report format:
-```
-Exercise ID | Issues Found | Severity | Fixed?
-------------|-------------|----------|-------
-01-xxx      | No NULL test case | High | Yes
-02-xxx      | Missing wrong answer test | Critical | Yes
-```
+| Command | Use |
+|---------|-----|
+| `pnpm test:integration` | Run ALL exercises against native DuckDB (first test case only) |
+| `pnpm test -- src/exercises/{id}/exercise.test.ts` | Run unit tests for one exercise |
+| `pnpm test:run` | Run ALL unit tests |

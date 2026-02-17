@@ -21,6 +21,11 @@ export function ActivityGraph({ activityDays, weeks: weeksProp }: ActivityGraphP
   const locale = useLocaleStore((s) => s.locale);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     const el = containerRef.current;
@@ -40,6 +45,7 @@ export function ActivityGraph({ activityDays, weeks: weeksProp }: ActivityGraphP
     : 20);
 
   const { grid, monthLabels } = useMemo(() => {
+    if (!mounted) return { grid: [], monthLabels: [] };
     const activitySet = new Set(activityDays);
     const today = new Date();
 
@@ -80,13 +86,13 @@ export function ActivityGraph({ activityDays, weeks: weeksProp }: ActivityGraphP
     }
 
     return { grid: cells, monthLabels: months };
-  }, [activityDays, weeks, locale]);
+  }, [activityDays, weeks, locale, mounted]);
 
   const svgWidth = weeks * CELL_STEP + LABEL_WIDTH;
   const svgHeight = 7 * CELL_STEP + 20;
 
   const streakDays = useMemo(() => {
-    if (activityDays.length === 0) return 0;
+    if (!mounted || activityDays.length === 0) return 0;
     const sorted = [...activityDays].sort().reverse();
     const today = new Date().toISOString().slice(0, 10);
     // Check if today or yesterday is in the list to start counting
@@ -104,7 +110,7 @@ export function ActivityGraph({ activityDays, weeks: weeksProp }: ActivityGraphP
       check.setDate(check.getDate() - 1);
     }
     return streak;
-  }, [activityDays]);
+  }, [activityDays, mounted]);
 
   return (
     <div className="space-y-2">

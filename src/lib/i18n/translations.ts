@@ -5,6 +5,7 @@ export const translations = {
   "nav.exercises": { en: "Exercises", fr: "Exercices" },
   "nav.daRoadmap": { en: "DA Roadmap", fr: "Parcours DA" },
   "nav.deRoadmap": { en: "DE Roadmap", fr: "Parcours DE" },
+  "nav.company": { en: "Companies", fr: "Entreprises" },
   "nav.back": { en: "Back", fr: "Retour" },
   "nav.prev": { en: "Prev", fr: "Prec" },
   "nav.next": { en: "Next", fr: "Suiv" },
@@ -32,6 +33,18 @@ export const translations = {
     fr: "Aucun exercice ne correspond au filtre selectionne.",
   },
   "home.comingSoon": { en: "Coming Soon", fr: "Bientot" },
+  "home.companyCta": {
+    en: "New: Practice SQL in realistic company scenarios",
+    fr: "Nouveau : Pratiquez le SQL dans des scenarios d'entreprise realistes",
+  },
+
+  // Companies page
+  "companies.title": { en: "Choose your company", fr: "Choisis ton entreprise" },
+  "companies.subtitle": {
+    en: "Each company has its own data, stakeholders, and business questions. Pick one and start querying.",
+    fr: "Chaque entreprise a ses propres donnees, interlocuteurs et questions business. Choisis-en une et commence a requeter.",
+  },
+  "companies.comingSoon": { en: "Coming soon", fr: "Bientot disponible" },
 
   // Difficulty filter
   "difficulty.all": { en: "All Levels", fr: "Tous niveaux" },

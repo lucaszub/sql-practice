@@ -115,16 +115,21 @@ export async function resetSchema(
 ): Promise<void> {
   const conn = await db.connect();
   try {
-    // DuckDB's default 'main' schema cannot be dropped, so drop objects individually
-    const tables = await conn.query(
-      "SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'"
-    );
-    const nameCol = tables.getChild("table_name");
-    if (nameCol) {
+    // DuckDB-WASM CASCADE doesn't always resolve FK deps, so use multiple passes
+    for (let pass = 0; pass < 5; pass++) {
+      const tables = await conn.query(
+        "SELECT table_name FROM information_schema.tables WHERE table_schema = 'main'"
+      );
+      const nameCol = tables.getChild("table_name");
+      if (!nameCol || tables.numRows === 0) break;
       for (let i = 0; i < tables.numRows; i++) {
         const name = nameCol.get(i);
         if (name) {
-          await conn.query(`DROP TABLE IF EXISTS "${name}" CASCADE`);
+          try {
+            await conn.query(`DROP TABLE IF EXISTS "${name}"`);
+          } catch {
+            // FK dependency — will retry in next pass
+          }
         }
       }
     }

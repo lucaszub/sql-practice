@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { getDuckDb, type AsyncDuckDB } from "@/lib/db/duckdb";
 import { executeQuery, resetSchema } from "@/lib/db/query-runner";
 import { validateResult } from "@/lib/db/validator";
@@ -9,7 +8,6 @@ import { neonCart } from "@/lib/companies/neon-cart";
 import type { TableInfo } from "@/lib/companies/types";
 import type { QueryResult, ValidationResult } from "@/lib/exercises/types";
 import { useLocale, type TranslationKey } from "@/lib/i18n";
-import { useTheme } from "@/components/theme-provider";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -32,9 +30,6 @@ import {
 import {
   ChevronLeft,
   ChevronRight,
-  Languages,
-  Sun,
-  Moon,
   Database,
   Table2,
   Send,
@@ -198,70 +193,225 @@ function ValidationDisplay({ validation }: { validation: ValidationResult | null
   );
 }
 
-// --- Table schema viewer ---
-function TableViewer({
-  table,
+// --- IDE-style schema tree ---
+function SchemaTree({
+  tables,
   locale,
   onPreview,
 }: {
-  table: TableInfo;
+  tables: TableInfo[];
   locale: "en" | "fr";
   onPreview: (tableName: string) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
+  const [expandedTables, setExpandedTables] = useState<Set<string>>(new Set());
+
+  const toggleTable = (name: string) => {
+    setExpandedTables((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
 
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-3 py-2 hover:bg-muted/50 transition-colors text-left"
-      >
-        <div className="flex items-center gap-2">
-          <Table2 className="h-3.5 w-3.5 text-primary shrink-0" />
-          <span className="text-sm font-mono font-medium">{table.name}</span>
-          <span className="text-xs text-muted-foreground">({table.rowCount})</span>
-        </div>
-        <ChevronRight className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${expanded ? "rotate-90" : ""}`} />
-      </button>
-      {expanded && (
-        <div className="border-t px-3 py-2 space-y-2 bg-muted/20">
-          <p className="text-xs text-muted-foreground">
-            {locale === "fr" ? table.descriptionFr : table.description}
+    <div className="text-[13px]">
+      {tables.map((tbl) => {
+        const isExpanded = expandedTables.has(tbl.name);
+        return (
+          <div key={tbl.name}>
+            {/* Table row */}
+            <button
+              onClick={() => toggleTable(tbl.name)}
+              className="w-full flex items-center gap-1.5 px-2 py-[5px] hover:bg-white/5 transition-colors group text-left"
+            >
+              <ChevronRight className={`h-3 w-3 text-muted-foreground shrink-0 transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+              <Table2 className="h-3.5 w-3.5 text-blue-400 shrink-0" />
+              <span className="font-mono font-medium text-foreground truncate">{tbl.name}</span>
+              <span className="text-[11px] text-muted-foreground ml-auto shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                {tbl.rowCount}
+              </span>
+            </button>
+            {/* Columns */}
+            {isExpanded && (
+              <div className="ml-3 border-l border-border/40">
+                {tbl.columns.map((col) => (
+                  <div
+                    key={col.name}
+                    className="flex items-center gap-1.5 pl-4 pr-2 py-[3px] hover:bg-white/5 text-[12px] group/col"
+                    title={locale === "fr" ? col.descriptionFr : col.description}
+                  >
+                    <span className={`shrink-0 w-1.5 h-1.5 rounded-full ${col.nullable ? "bg-yellow-500/60" : "bg-emerald-500/60"}`} />
+                    <span className="font-mono text-foreground/80 truncate">{col.name}</span>
+                    <span className="font-mono text-muted-foreground text-[11px] ml-auto shrink-0">{col.type}</span>
+                  </div>
+                ))}
+                <button
+                  onClick={() => onPreview(tbl.name)}
+                  className="flex items-center gap-1.5 pl-4 pr-2 py-[3px] text-[11px] text-blue-400 hover:text-blue-300 hover:bg-white/5 w-full transition-colors"
+                >
+                  <Play className="h-2.5 w-2.5" />
+                  <span>SELECT * LIMIT 10</span>
+                </button>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// --- Company intro screen ---
+function CompanyIntro({
+  company,
+  locale,
+  onStart,
+}: {
+  company: typeof neonCart;
+  locale: "en" | "fr";
+  onStart: () => void;
+}) {
+  const totalRows = company.tables.reduce((sum, t) => sum + t.rowCount, 0);
+  const stakeholders = Array.from(
+    new Map(
+      company.questions.map((q) => [q.stakeholder, { name: q.stakeholder, role: q.stakeholderRole }])
+    ).values()
+  );
+  const diffCounts = { easy: 0, medium: 0, hard: 0 };
+  for (const q of company.questions) diffCounts[q.difficulty]++;
+
+  return (
+    <div className="min-h-[calc(100vh-48px)] bg-gradient-to-b from-background to-muted/30">
+      <div className="max-w-4xl mx-auto px-6 py-16 space-y-12">
+        {/* Hero */}
+        <div className="text-center space-y-4">
+          <span className="text-6xl">{company.icon}</span>
+          <h1 className="text-4xl font-bold tracking-tight">{company.name}</h1>
+          <p className="text-lg text-muted-foreground">
+            {locale === "fr" ? company.taglineFr : company.tagline}
           </p>
-          <table className="w-full text-xs">
-            <thead>
-              <tr className="text-muted-foreground">
-                <th className="text-left py-1 font-medium">Column</th>
-                <th className="text-left py-1 font-medium">Type</th>
-                <th className="text-left py-1 font-medium">Null</th>
-              </tr>
-            </thead>
-            <tbody>
-              {table.columns.map((col) => (
-                <tr key={col.name} className="border-t border-border/50">
-                  <td className="py-1 font-mono text-foreground">{col.name}</td>
-                  <td className="py-1 font-mono text-muted-foreground">{col.type}</td>
-                  <td className="py-1">{col.nullable ? <span className="text-yellow-600 dark:text-yellow-400">yes</span> : "no"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Button variant="ghost" size="xs" className="text-xs" onClick={() => onPreview(table.name)}>
-            <Play className="h-3 w-3 mr-1" />
-            SELECT * FROM {table.name} LIMIT 10
+          <Badge variant="outline" className="text-sm px-3 py-1">
+            {locale === "fr" ? company.sectorFr : company.sector}
+          </Badge>
+        </div>
+
+        {/* Story */}
+        <div className="rounded-xl border bg-card p-6 shadow-sm space-y-3">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <Database className="h-5 w-5 text-primary" />
+            {locale === "fr" ? "Ton contexte" : "Your context"}
+          </h2>
+          <p className="text-sm text-foreground/80 leading-relaxed">
+            {locale === "fr" ? company.descriptionFr : company.description}
+          </p>
+        </div>
+
+        {/* Stats grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="rounded-lg border bg-card p-4 text-center">
+            <p className="text-2xl font-bold text-primary">{company.tables.length}</p>
+            <p className="text-xs text-muted-foreground mt-1">tables</p>
+          </div>
+          <div className="rounded-lg border bg-card p-4 text-center">
+            <p className="text-2xl font-bold text-primary">{totalRows}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {locale === "fr" ? "lignes de données" : "data rows"}
+            </p>
+          </div>
+          <div className="rounded-lg border bg-card p-4 text-center">
+            <p className="text-2xl font-bold text-primary">{company.questions.length}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {locale === "fr" ? "questions business" : "business questions"}
+            </p>
+          </div>
+          <div className="rounded-lg border bg-card p-4 text-center">
+            <p className="text-2xl font-bold text-primary">{stakeholders.length}</p>
+            <p className="text-xs text-muted-foreground mt-1">stakeholders</p>
+          </div>
+        </div>
+
+        {/* Stakeholders */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">
+            {locale === "fr" ? "Ton equipe" : "Your team"}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {stakeholders.map((s) => (
+              <div key={s.name} className="rounded-lg border bg-card p-4 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-semibold text-primary">
+                  {s.name.charAt(0)}
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{s.name}</p>
+                  <p className="text-xs text-muted-foreground">{s.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Difficulty breakdown */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">
+            {locale === "fr" ? "Repartition des questions" : "Question breakdown"}
+          </h2>
+          <div className="flex gap-3">
+            <div className="flex items-center gap-2 rounded-lg border bg-green-50 dark:bg-green-950 px-4 py-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
+              <span className="text-sm">{diffCounts.easy} {locale === "fr" ? "faciles" : "easy"}</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-yellow-50 dark:bg-yellow-950 px-4 py-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
+              <span className="text-sm">{diffCounts.medium} {locale === "fr" ? "moyennes" : "medium"}</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg border bg-red-50 dark:bg-red-950 px-4 py-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-red-500" />
+              <span className="text-sm">{diffCounts.hard} {locale === "fr" ? "difficiles" : "hard"}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Tables overview */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold">
+            {locale === "fr" ? "Les donnees a ta disposition" : "Available data"}
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {company.tables.map((tbl) => (
+              <div key={tbl.name} className="rounded-lg border bg-card p-4 space-y-1">
+                <div className="flex items-center gap-2">
+                  <Table2 className="h-4 w-4 text-primary" />
+                  <span className="font-mono text-sm font-medium">{tbl.name}</span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {locale === "fr" ? tbl.descriptionFr : tbl.description}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {tbl.columns.length} {locale === "fr" ? "colonnes" : "columns"} · {tbl.rowCount} {locale === "fr" ? "lignes" : "rows"}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* CTA */}
+        <div className="text-center pt-4">
+          <Button size="lg" onClick={onStart} className="px-8">
+            <Play className="h-5 w-5 mr-2" />
+            {locale === "fr" ? "Commencer les exercices" : "Start practicing"}
           </Button>
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
 // --- Main page ---
 export default function NeonCartPage() {
-  const router = useRouter();
-  const { locale, toggle: toggleLocale, t } = useLocale();
-  const { theme, toggle: toggleTheme } = useTheme();
+  const { locale, t } = useLocale();
 
+  const [showIntro, setShowIntro] = useState(true);
   const [db, setDb] = useState<AsyncDuckDB | null>(null);
   const [dbReady, setDbReady] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
@@ -391,15 +541,22 @@ export default function NeonCartPage() {
     hard: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   };
 
+  // Show intro screen first
+  if (showIntro) {
+    return (
+      <CompanyIntro
+        company={company}
+        locale={locale}
+        onStart={() => setShowIntro(false)}
+      />
+    );
+  }
+
   if (!dbReady) {
     return (
-      <div className="h-screen flex flex-col">
+      <div className="h-[calc(100vh-48px)] flex flex-col">
         <header className="flex items-center justify-between px-4 py-2 border-b bg-background">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              {t("nav.back")}
-            </Button>
             <span className="text-lg">{company.icon}</span>
             <h1 className="text-lg font-semibold">{company.name}</h1>
           </div>
@@ -421,14 +578,10 @@ export default function NeonCartPage() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="h-[calc(100vh-48px)] flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-2 border-b bg-background shrink-0">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" onClick={() => router.push("/")}>
-            <ChevronLeft className="h-4 w-4 mr-1" />
-            {t("nav.back")}
-          </Button>
           <span className="text-lg">{company.icon}</span>
           <h1 className="text-lg font-semibold">{company.name}</h1>
           <span className="text-sm text-muted-foreground hidden sm:inline">
@@ -436,118 +589,96 @@ export default function NeonCartPage() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <Button variant="ghost" size="sm" className="text-xs" onClick={() => setShowIntro(true)}>
+            {company.icon} {locale === "fr" ? "A propos" : "About"}
+          </Button>
           <span className="text-xs text-muted-foreground">
             {solvedQuestions.size}/{company.questions.length} solved
           </span>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleLocale} title={locale === "en" ? "Passer en français" : "Switch to English"}>
-            <Languages className="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleTheme}>
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
         </div>
       </header>
 
-      {/* Main 3-column layout */}
-      <ResizablePanelGroup orientation="horizontal" className="flex-1">
-        {/* Left sidebar: Tables + Questions */}
-        <ResizablePanel defaultSize={25} minSize={18} maxSize={35}>
-          <div className="h-full flex flex-col">
-            <Tabs defaultValue="tables" className="h-full flex flex-col">
-              <TabsList className="mx-2 mt-2 shrink-0">
-                <TabsTrigger value="tables">
-                  <Database className="h-3.5 w-3.5 mr-1" />
-                  Tables
-                </TabsTrigger>
-                <TabsTrigger value="questions">
-                  <Lightbulb className="h-3.5 w-3.5 mr-1" />
-                  Questions
-                  <span className="ml-1 text-[10px] bg-primary/10 rounded-full px-1.5 py-0.5">
-                    {company.questions.length}
-                  </span>
-                </TabsTrigger>
-              </TabsList>
+      {/* Main layout: sidebar + workspace */}
+      <ResizablePanelGroup orientation="horizontal" className="flex-1 min-h-0 overflow-hidden">
+        {/* Left sidebar: IDE-style schema explorer */}
+        <ResizablePanel defaultSize={30} minSize={20}>
+          <div className="h-full flex flex-col bg-muted/40 dark:bg-zinc-900/60 border-r overflow-hidden">
+            {/* Schema section */}
+            <div className="shrink-0 px-3 py-2 border-b border-border/50">
+              <div className="flex items-center gap-1.5">
+                <Database className="h-3.5 w-3.5 text-muted-foreground" />
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  Schema
+                </span>
+                <span className="text-[10px] text-muted-foreground ml-auto">{company.tables.length} tables</span>
+              </div>
+            </div>
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="py-1">
+                <SchemaTree
+                  tables={company.tables}
+                  locale={locale}
+                  onPreview={handlePreviewTable}
+                />
+              </div>
 
-              {/* Tables tab */}
-              <TabsContent value="tables" className="flex-1 overflow-hidden mt-0">
-                <ScrollArea className="h-full">
-                  <div className="p-2 space-y-1.5">
-                    <div className="px-2 py-1.5">
-                      <p className="text-xs text-muted-foreground">
-                        {locale === "fr"
-                          ? `${company.tables.length} tables · Clique pour explorer`
-                          : `${company.tables.length} tables · Click to explore`}
-                      </p>
-                    </div>
-                    {company.tables.map((tbl) => (
-                      <TableViewer
-                        key={tbl.name}
-                        table={tbl}
-                        locale={locale}
-                        onPreview={handlePreviewTable}
-                      />
-                    ))}
+              {/* Questions section */}
+              <div className="border-t border-border/50 mt-1">
+                <div className="px-3 py-2">
+                  <div className="flex items-center gap-1.5">
+                    <Lightbulb className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                      Questions
+                    </span>
+                    <span className="text-[10px] text-muted-foreground ml-auto">
+                      {solvedQuestions.size}/{company.questions.length}
+                    </span>
                   </div>
-                </ScrollArea>
-              </TabsContent>
-
-              {/* Questions tab */}
-              <TabsContent value="questions" className="flex-1 overflow-hidden mt-0">
-                <ScrollArea className="h-full">
-                  <div className="p-2 space-y-1">
-                    {company.questions.map((q, idx) => {
-                      const isSolved = solvedQuestions.has(q.id);
-                      const isActive = idx === activeQuestionIdx;
-                      return (
-                        <button
-                          key={q.id}
-                          onClick={() => setActiveQuestionIdx(idx)}
-                          className={`w-full text-left rounded-lg px-3 py-2.5 transition-colors ${
-                            isActive
-                              ? "bg-primary/10 border border-primary/20"
-                              : "hover:bg-muted/50 border border-transparent"
-                          }`}
-                        >
-                          <div className="flex items-start gap-2">
-                            {isSolved ? (
-                              <CheckCircle2 className="h-4 w-4 text-green-500 mt-0.5 shrink-0" />
-                            ) : (
-                              <span className="h-4 w-4 rounded-full border border-muted-foreground/30 mt-0.5 shrink-0 flex items-center justify-center text-[9px] text-muted-foreground">
-                                {idx + 1}
-                              </span>
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium truncate">
-                                {locale === "fr" ? q.titleFr : q.title}
-                              </p>
-                              <div className="flex items-center gap-1.5 mt-1">
-                                <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${difficultyColor[q.difficulty]}`}>
-                                  {t(`difficulty.${q.difficulty}` as TranslationKey)}
-                                </Badge>
-                                <span className="text-[10px] text-muted-foreground">
-                                  {q.stakeholder} · {q.stakeholderRole}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </ScrollArea>
-              </TabsContent>
-            </Tabs>
+                </div>
+                <div className="pb-2">
+                  {company.questions.map((q, idx) => {
+                    const isSolved = solvedQuestions.has(q.id);
+                    const isActive = idx === activeQuestionIdx;
+                    return (
+                      <button
+                        key={q.id}
+                        onClick={() => setActiveQuestionIdx(idx)}
+                        className={`w-full text-left px-3 py-1.5 flex items-center gap-2 transition-colors text-[13px] ${
+                          isActive
+                            ? "bg-primary/10 border-l-2 border-l-primary"
+                            : "hover:bg-white/5 border-l-2 border-l-transparent"
+                        }`}
+                      >
+                        {isSolved ? (
+                          <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
+                        ) : (
+                          <span className="h-3.5 w-3.5 shrink-0 flex items-center justify-center text-[10px] text-muted-foreground font-mono">
+                            {idx + 1}
+                          </span>
+                        )}
+                        <span className={`truncate ${isActive ? "text-foreground font-medium" : "text-foreground/70"}`}>
+                          {locale === "fr" ? q.titleFr : q.title}
+                        </span>
+                        <span className={`ml-auto shrink-0 h-1.5 w-1.5 rounded-full ${
+                          q.difficulty === "easy" ? "bg-green-500" : q.difficulty === "medium" ? "bg-yellow-500" : "bg-red-500"
+                        }`} />
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </ScrollArea>
           </div>
         </ResizablePanel>
 
         <ResizableHandle withHandle />
 
         {/* Right: Question description + editor + results */}
-        <ResizablePanel defaultSize={75} minSize={50}>
-          <ResizablePanelGroup orientation="vertical">
+        <ResizablePanel defaultSize={70} minSize={40} className="min-w-0">
+          <ResizablePanelGroup orientation="vertical" className="h-full">
             {/* Top: Question + Editor */}
             <ResizablePanel defaultSize={55} minSize={25}>
-              <div className="h-full flex flex-col">
+              <div className="h-full flex flex-col overflow-hidden min-w-0">
                 {/* Question header */}
                 <div className="px-4 py-3 border-b bg-muted/30 shrink-0 space-y-2">
                   <div className="flex items-center justify-between">
@@ -601,7 +732,7 @@ export default function NeonCartPage() {
                 </div>
 
                 {/* SQL Editor */}
-                <div className="flex-1 flex flex-col min-h-0">
+                <div className="flex-1 flex flex-col min-h-0 min-w-0 overflow-hidden">
                   <div className="flex items-center justify-between px-3 py-2 border-b bg-muted/50 shrink-0">
                     <span className="text-sm font-medium">{t("exercise.sqlEditor")}</span>
                     <Button onClick={handleRun} size="sm" disabled={isRunning}>
@@ -613,15 +744,17 @@ export default function NeonCartPage() {
                       {isRunning ? t("exercise.running") : t("exercise.submit")}
                     </Button>
                   </div>
-                  <div className="flex-1 overflow-auto">
-                    <CodeMirror
-                      value={currentSql}
-                      onChange={setCurrentSql}
-                      extensions={extensions}
-                      theme={oneDark}
-                      height="100%"
-                      className="h-full"
-                    />
+                  <div className="relative flex-1 min-h-0">
+                    <div className="absolute inset-0">
+                      <CodeMirror
+                        value={currentSql}
+                        onChange={setCurrentSql}
+                        extensions={extensions}
+                        theme={oneDark}
+                        height="100%"
+                        className="h-full [&_.cm-editor]:!h-full [&_.cm-scroller]:!overflow-auto"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

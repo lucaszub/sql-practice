@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { useParams, notFound } from "next/navigation";
 import { getDuckDb, type AsyncDuckDB } from "@/lib/db/duckdb";
 import { executeQuery, resetSchema } from "@/lib/db/query-runner";
 import { validateResult } from "@/lib/db/validator";
-import { neonCart } from "@/lib/companies/neon-cart";
-import type { TableInfo } from "@/lib/companies/types";
+import { getCompanyProfile } from "@/lib/companies";
+import type { CompanyProfile, TableInfo } from "@/lib/companies/types";
 import type { QueryResult, ValidationResult } from "@/lib/exercises/types";
 import { useLocale, type TranslationKey } from "@/lib/i18n";
 import {
@@ -43,7 +44,7 @@ import {
   Play,
 } from "lucide-react";
 
-// --- Inline Results Table (reuse patterns) ---
+// --- Inline Results Table ---
 function InlineResultsTable({ result, error }: { result: QueryResult | null; error: string | null }) {
   const { t } = useLocale();
   const columns = useMemo<ColumnDef<Record<string, unknown>>[]>(() => {
@@ -220,7 +221,6 @@ function SchemaTree({
         const isExpanded = expandedTables.has(tbl.name);
         return (
           <div key={tbl.name}>
-            {/* Table row */}
             <button
               onClick={() => toggleTable(tbl.name)}
               className="w-full flex items-center gap-1.5 px-2 py-[5px] hover:bg-white/5 transition-colors group text-left"
@@ -232,7 +232,6 @@ function SchemaTree({
                 {tbl.rowCount}
               </span>
             </button>
-            {/* Columns */}
             {isExpanded && (
               <div className="ml-3 border-l border-border/40">
                 {tbl.columns.map((col) => (
@@ -268,7 +267,7 @@ function CompanyIntro({
   locale,
   onStart,
 }: {
-  company: typeof neonCart;
+  company: CompanyProfile;
   locale: "en" | "fr";
   onStart: () => void;
 }) {
@@ -316,7 +315,7 @@ function CompanyIntro({
           <div className="rounded-lg border bg-card p-4 text-center">
             <p className="text-2xl font-bold text-primary">{totalRows}</p>
             <p className="text-xs text-muted-foreground mt-1">
-              {locale === "fr" ? "lignes de données" : "data rows"}
+              {locale === "fr" ? "lignes de donnees" : "data rows"}
             </p>
           </div>
           <div className="rounded-lg border bg-card p-4 text-center">
@@ -408,9 +407,12 @@ function CompanyIntro({
 }
 
 // --- Main page ---
-export default function NeonCartPage() {
+export default function CompanyPage() {
+  const params = useParams<{ companyId: string }>();
   const { locale, t } = useLocale();
 
+  const [company, setCompany] = useState<CompanyProfile | null>(null);
+  const [loadError, setLoadError] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const [db, setDb] = useState<AsyncDuckDB | null>(null);
   const [dbReady, setDbReady] = useState(false);
@@ -428,11 +430,27 @@ export default function NeonCartPage() {
   const [solvedQuestions, setSolvedQuestions] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<string>("results");
 
-  const company = neonCart;
-  const activeQuestion = company.questions[activeQuestionIdx];
-
-  // Initialize DuckDB
+  // Load company profile
   useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const profile = await getCompanyProfile(params.companyId);
+      if (cancelled) return;
+      if (!profile) {
+        setLoadError(true);
+        return;
+      }
+      setCompany(profile);
+    };
+    load();
+    return () => { cancelled = true; };
+  }, [params.companyId]);
+
+  const activeQuestion = company?.questions[activeQuestionIdx] ?? null;
+
+  // Initialize DuckDB when company is loaded
+  useEffect(() => {
+    if (!company) return;
     let cancelled = false;
     (async () => {
       try {
@@ -446,7 +464,7 @@ export default function NeonCartPage() {
       }
     })();
     return () => { cancelled = true; };
-  }, [company.schema]);
+  }, [company]);
 
   // Reset state when switching questions
   useEffect(() => {
@@ -479,7 +497,7 @@ export default function NeonCartPage() {
   // Run & validate
   const onRunRef = useRef<() => void>(() => {});
   const handleRun = useCallback(async () => {
-    if (!db || !activeQuestion || isRunning) return;
+    if (!db || !activeQuestion || !company || isRunning) return;
 
     setIsRunning(true);
     setError(null);
@@ -487,12 +505,10 @@ export default function NeonCartPage() {
     setValidation(null);
 
     try {
-      // Reset schema to clean state before running
       await resetSchema(db, company.schema);
       const result = await executeQuery(db, currentSql);
       setQueryResult(result);
 
-      // Validate against expected
       const testCase = {
         name: activeQuestion.id,
         description: activeQuestion.title,
@@ -513,7 +529,7 @@ export default function NeonCartPage() {
     } finally {
       setIsRunning(false);
     }
-  }, [db, activeQuestion, currentSql, isRunning, company.schema]);
+  }, [db, activeQuestion, currentSql, isRunning, company]);
 
   onRunRef.current = handleRun;
 
@@ -540,6 +556,22 @@ export default function NeonCartPage() {
     medium: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200",
     hard: "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200",
   };
+
+  if (loadError) {
+    notFound();
+  }
+
+  // Loading company profile
+  if (!company) {
+    return (
+      <div className="h-[calc(100vh-48px)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto" />
+          <p className="mt-3 text-sm text-muted-foreground">{t("exercise.loading")}</p>
+        </div>
+      </div>
+    );
+  }
 
   // Show intro screen first
   if (showIntro) {
@@ -683,11 +715,13 @@ export default function NeonCartPage() {
                 <div className="px-4 py-3 border-b bg-muted/30 shrink-0 space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline" className={difficultyColor[activeQuestion.difficulty]}>
-                        {t(`difficulty.${activeQuestion.difficulty}` as TranslationKey)}
-                      </Badge>
+                      {activeQuestion && (
+                        <Badge variant="outline" className={difficultyColor[activeQuestion.difficulty]}>
+                          {t(`difficulty.${activeQuestion.difficulty}` as TranslationKey)}
+                        </Badge>
+                      )}
                       <h2 className="text-sm font-semibold">
-                        {locale === "fr" ? activeQuestion.titleFr : activeQuestion.title}
+                        {activeQuestion && (locale === "fr" ? activeQuestion.titleFr : activeQuestion.title)}
                       </h2>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -706,9 +740,11 @@ export default function NeonCartPage() {
                       )}
                     </div>
                   </div>
-                  <p className="text-sm text-foreground/80">
-                    {locale === "fr" ? activeQuestion.descriptionFr : activeQuestion.description}
-                  </p>
+                  {activeQuestion && (
+                    <p className="text-sm text-foreground/80">
+                      {locale === "fr" ? activeQuestion.descriptionFr : activeQuestion.description}
+                    </p>
+                  )}
                   <div className="flex items-center gap-2">
                     <Button variant="ghost" size="xs" onClick={() => setShowHint(!showHint)}>
                       <Lightbulb className="h-3 w-3 mr-1" />
@@ -719,12 +755,12 @@ export default function NeonCartPage() {
                       {showSolution ? "Hide solution" : "Show solution"}
                     </Button>
                   </div>
-                  {showHint && (
+                  {showHint && activeQuestion && (
                     <div className="rounded-md border border-yellow-200 bg-yellow-50 dark:border-yellow-900 dark:bg-yellow-950 p-2 text-xs">
                       {locale === "fr" ? activeQuestion.hintFr : activeQuestion.hint}
                     </div>
                   )}
-                  {showSolution && (
+                  {showSolution && activeQuestion && (
                     <div className="rounded-md border border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950 p-2">
                       <pre className="text-xs font-mono whitespace-pre-wrap">{activeQuestion.solutionQuery}</pre>
                     </div>

@@ -11,6 +11,27 @@ export interface CompanySummary {
   ready: boolean;
 }
 
+export type { CompanyProfile } from "./types";
+
+export function getCompanyProfile(id: string) {
+  // Lazy-load to avoid bundling all companies upfront
+  const loaders: Record<string, () => Promise<{ default: CompanyProfile } | Record<string, CompanyProfile>>> = {
+    "neon-cart": () => import("./neon-cart").then((m) => ({ default: m.neonCart })),
+    dataflow: () => import("./dataflow").then((m) => ({ default: m.dataflow })),
+    pixelads: () => import("./pixelads").then((m) => ({ default: m.pixelAds })),
+    cashbee: () => import("./cashbee").then((m) => ({ default: m.cashBee })),
+    talenthub: () => import("./talenthub").then((m) => ({ default: m.talentHub })),
+    cloudforge: () => import("./cloudforge").then((m) => ({ default: m.cloudForge })),
+    freshbowl: () => import("./freshbowl").then((m) => ({ default: m.freshBowl })),
+    streampulse: () => import("./streampulse").then((m) => ({ default: m.streamPulse })),
+  };
+  const loader = loaders[id];
+  if (!loader) return null;
+  return loader().then((m) => (m as { default: CompanyProfile }).default);
+}
+
+import type { CompanyProfile } from "./types";
+
 export const companies: CompanySummary[] = [
   {
     id: "neon-cart",

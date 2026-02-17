@@ -404,10 +404,10 @@ ORDER BY month;`,
   ROUND(100.0 * COUNT(*) FILTER (WHERE status = 'resolved') / COUNT(*), 1) AS resolution_rate
 FROM tickets
 GROUP BY category
-ORDER BY ticket_count DESC;`,
+ORDER BY ticket_count DESC, category;`,
       expectedColumns: ["category", "ticket_count", "resolved_count", "resolution_rate"],
       expectedRows: [
-        { category: "billing", ticket_count: 5, resolved_count: 3, resolution_rate: 60.0 },
+        { category: "billing", ticket_count: 5, resolved_count: 2, resolution_rate: 40.0 },
         { category: "bug", ticket_count: 5, resolved_count: 5, resolution_rate: 100.0 },
         { category: "how_to", ticket_count: 3, resolved_count: 2, resolution_rate: 66.7 },
         { category: "feature_request", ticket_count: 2, resolved_count: 1, resolution_rate: 50.0 },
@@ -534,20 +534,20 @@ JOIN plans p ON s.plan_id = p.plan_id
 JOIN invoices i ON s.subscription_id = i.subscription_id
 WHERE i.payment_status = 'paid'
 GROUP BY u.user_id, u.first_name, u.last_name, u.company, p.plan_name
-ORDER BY total_invoiced DESC
+ORDER BY total_invoiced DESC, u.last_name
 LIMIT 10;`,
       expectedColumns: ["first_name", "last_name", "company", "plan_name", "total_invoiced"],
       expectedRows: [
         { first_name: "Clara", last_name: "Leroy", company: "InnovateTech", plan_name: "Enterprise", total_invoiced: 398.00 },
         { first_name: "Samuel", last_name: "Perrin", company: "EcoTrack", plan_name: "Enterprise", total_invoiced: 398.00 },
-        { first_name: "Gabrielle", last_name: "Michel", company: "LogistiqA", plan_name: "Enterprise", total_invoiced: 398.00 },
         { first_name: "Marie", last_name: "Lefevre", company: "CloudNine", plan_name: "Enterprise", total_invoiced: 199.00 },
+        { first_name: "Gabrielle", last_name: "Michel", company: "LogistiqA", plan_name: "Enterprise", total_invoiced: 199.00 },
         { first_name: "Alice", last_name: "Martin", company: "TechCorp", plan_name: "Pro", total_invoiced: 158.00 },
+        { first_name: "Emma", last_name: "Simon", company: "MediaCo", plan_name: "Pro", total_invoiced: 158.00 },
         { first_name: "Ines", last_name: "Thomas", company: "DataPulse", plan_name: "Pro", total_invoiced: 158.00 },
-        { first_name: "Ugo", last_name: "Faure", company: "ByteCraft", plan_name: "Pro", total_invoiced: 79.00 },
         { first_name: "Quentin", last_name: "Blanc", company: "NextMove", plan_name: "Pro", total_invoiced: 79.00 },
         { first_name: "Bob", last_name: "Dupont", company: "SalesFR", plan_name: "Pro", total_invoiced: 79.00 },
-        { first_name: "Jules", last_name: "Robert", company: "FinEdge", plan_name: "Pro", total_invoiced: 79.00 },
+        { first_name: "Lucas", last_name: "Durand", company: "BuildFast", plan_name: "Pro", total_invoiced: 79.00 },
       ],
       orderMatters: true,
     },

@@ -1,23 +1,43 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useRef, useState, useEffect } from "react";
 import { useLocale, useLocaleStore } from "@/lib/i18n";
 
 interface ActivityGraphProps {
   /** Set of "YYYY-MM-DD" date strings with activity */
   activityDays: string[];
-  /** Number of weeks to display */
+  /** Number of weeks to display (auto-calculated from container width if omitted) */
   weeks?: number;
 }
 
 const DAY_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
+const LABEL_WIDTH = 30;
 const CELL_SIZE = 12;
 const CELL_GAP = 3;
 const CELL_STEP = CELL_SIZE + CELL_GAP;
 
-export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) {
+export function ActivityGraph({ activityDays, weeks: weeksProp }: ActivityGraphProps) {
   const { t } = useLocale();
   const locale = useLocaleStore((s) => s.locale);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        setContainerWidth(entry.contentRect.width);
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const weeks = weeksProp ?? (containerWidth > 0
+    ? Math.max(4, Math.floor((containerWidth - LABEL_WIDTH) / CELL_STEP))
+    : 20);
 
   const { grid, monthLabels } = useMemo(() => {
     const activitySet = new Set(activityDays);
@@ -62,7 +82,7 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
     return { grid: cells, monthLabels: months };
   }, [activityDays, weeks, locale]);
 
-  const svgWidth = weeks * CELL_STEP + 30;
+  const svgWidth = weeks * CELL_STEP + LABEL_WIDTH;
   const svgHeight = 7 * CELL_STEP + 20;
 
   const streakDays = useMemo(() => {
@@ -98,8 +118,8 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
           )}
         </p>
       </div>
-      <div className="overflow-x-auto">
-        <svg width={svgWidth} height={svgHeight} className="block">
+      <div ref={containerRef} className="w-full">
+        <svg width="100%" height={svgHeight} viewBox={`0 0 ${svgWidth} ${svgHeight}`} className="block">
           {/* Day labels */}
           {DAY_LABELS.map((label, i) =>
             label ? (
@@ -119,7 +139,7 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
           {monthLabels.map(({ label, col }, i) => (
             <text
               key={i}
-              x={30 + col * CELL_STEP}
+              x={LABEL_WIDTH + col * CELL_STEP}
               y={10}
               className="fill-muted-foreground"
               fontSize={9}
@@ -132,7 +152,7 @@ export function ActivityGraph({ activityDays, weeks = 20 }: ActivityGraphProps) 
           {grid.map(({ date, col, row, active }) => (
             <rect
               key={date}
-              x={30 + col * CELL_STEP}
+              x={LABEL_WIDTH + col * CELL_STEP}
               y={18 + row * CELL_STEP}
               width={CELL_SIZE}
               height={CELL_SIZE}

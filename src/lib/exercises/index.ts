@@ -50,6 +50,57 @@ import { exercise as ex47 } from "@/exercises/47-multi-cte-customer-segmentation
 import { exercise as ex48 } from "@/exercises/48-exists-never-ordered/exercise";
 import { exercise as ex49 } from "@/exercises/49-nested-ctes-mom-growth/exercise";
 import { exercise as ex50 } from "@/exercises/50-saas-kpi-dashboard/exercise";
+import { exercise as ex51 } from "@/exercises/51-create-table-basics/exercise";
+import { exercise as ex52 } from "@/exercises/52-add-column-alter/exercise";
+import { exercise as ex53 } from "@/exercises/53-create-with-constraints/exercise";
+import { exercise as ex54 } from "@/exercises/54-foreign-key-design/exercise";
+import { exercise as ex55 } from "@/exercises/55-drop-recreate-migration/exercise";
+import { exercise as ex56 } from "@/exercises/56-bulk-insert-staging/exercise";
+import { exercise as ex57 } from "@/exercises/57-insert-select-transform/exercise";
+import { exercise as ex58 } from "@/exercises/58-update-from-join/exercise";
+import { exercise as ex59 } from "@/exercises/59-delete-orphan-records/exercise";
+import { exercise as ex60 } from "@/exercises/60-create-table-as-select/exercise";
+import { exercise as ex61 } from "@/exercises/61-primary-key-design/exercise";
+import { exercise as ex62 } from "@/exercises/62-foreign-key-relationships/exercise";
+import { exercise as ex63 } from "@/exercises/63-check-constraints/exercise";
+import { exercise as ex64 } from "@/exercises/64-not-null-defaults/exercise";
+import { exercise as ex65 } from "@/exercises/65-data-type-casting/exercise";
+import { exercise as ex66 } from "@/exercises/66-fact-table-design/exercise";
+import { exercise as ex67 } from "@/exercises/67-dimension-table-design/exercise";
+import { exercise as ex68 } from "@/exercises/68-date-dimension/exercise";
+import { exercise as ex69 } from "@/exercises/69-star-schema-queries/exercise";
+import { exercise as ex70 } from "@/exercises/70-snowflake-extension/exercise";
+import { exercise as ex71 } from "@/exercises/71-scd-type1-overwrite/exercise";
+import { exercise as ex72 } from "@/exercises/72-scd2-structure/exercise";
+import { exercise as ex73 } from "@/exercises/73-scd2-insert-version/exercise";
+import { exercise as ex74 } from "@/exercises/74-scd2-current-snapshot/exercise";
+import { exercise as ex75 } from "@/exercises/75-scd2-point-in-time/exercise";
+import { exercise as ex76 } from "@/exercises/76-insert-or-replace/exercise";
+import { exercise as ex77 } from "@/exercises/77-merge-basics/exercise";
+import { exercise as ex78 } from "@/exercises/78-merge-conditional/exercise";
+import { exercise as ex79 } from "@/exercises/79-merge-with-delete/exercise";
+import { exercise as ex80 } from "@/exercises/80-idempotent-dimension-load/exercise";
+import { exercise as ex81 } from "@/exercises/81-watermark-pattern/exercise";
+import { exercise as ex82 } from "@/exercises/82-partition-overwrite/exercise";
+import { exercise as ex83 } from "@/exercises/83-batch-id-tracking/exercise";
+import { exercise as ex84 } from "@/exercises/84-idempotent-reload/exercise";
+import { exercise as ex85 } from "@/exercises/85-recursive-hierarchy-depth/exercise";
+import { exercise as ex86 } from "@/exercises/86-recursive-path-concat/exercise";
+import { exercise as ex87 } from "@/exercises/87-recursive-bom-explosion/exercise";
+import { exercise as ex88 } from "@/exercises/88-recursive-category-tree/exercise";
+import { exercise as ex89 } from "@/exercises/89-null-completeness-check/exercise";
+import { exercise as ex90 } from "@/exercises/90-uniqueness-validation/exercise";
+import { exercise as ex91 } from "@/exercises/91-referential-integrity/exercise";
+import { exercise as ex92 } from "@/exercises/92-range-freshness-check/exercise";
+import { exercise as ex93 } from "@/exercises/93-quality-suite-report/exercise";
+import { exercise as ex94 } from "@/exercises/94-explain-basics/exercise";
+import { exercise as ex95 } from "@/exercises/95-sargable-queries/exercise";
+import { exercise as ex96 } from "@/exercises/96-select-specificity/exercise";
+import { exercise as ex97 } from "@/exercises/97-exists-vs-in-performance/exercise";
+import { exercise as ex98 } from "@/exercises/98-list-aggregation/exercise";
+import { exercise as ex99 } from "@/exercises/99-list-unnesting/exercise";
+import { exercise as ex100 } from "@/exercises/100-struct-access/exercise";
+import { exercise as ex101 } from "@/exercises/101-json-processing/exercise";
 
 export const exercises: Exercise[] = [
   ex01, ex02, ex03, ex04, ex05,
@@ -62,6 +113,17 @@ export const exercises: Exercise[] = [
   ex36, ex37, ex38, ex39, ex40,
   ex41, ex42, ex43, ex44, ex45,
   ex46, ex47, ex48, ex49, ex50,
+  ex51, ex52, ex53, ex54, ex55,
+  ex56, ex57, ex58, ex59, ex60,
+  ex61, ex62, ex63, ex64, ex65,
+  ex66, ex67, ex68, ex69, ex70,
+  ex71, ex72, ex73, ex74, ex75,
+  ex76, ex77, ex78, ex79, ex80,
+  ex81, ex82, ex83, ex84,
+  ex85, ex86, ex87, ex88,
+  ex89, ex90, ex91, ex92, ex93,
+  ex94, ex95, ex96, ex97,
+  ex98, ex99, ex100, ex101,
 ];
 
 export function getExercise(id: string): Exercise | undefined {

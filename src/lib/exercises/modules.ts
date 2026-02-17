@@ -426,7 +426,13 @@ export const dataEngineerTrack: Track = {
       level: "intermediate",
       description:
         "Create tables with constraints, define primary/foreign keys, and design normalized schemas.",
-      exerciseIds: [],
+      exerciseIds: [
+        "51-create-table-basics",
+        "52-add-column-alter",
+        "53-create-with-constraints",
+        "54-foreign-key-design",
+        "55-drop-recreate-migration",
+      ],
       skills: ["CREATE TABLE", "PRIMARY KEY", "FOREIGN KEY", "Normalization"],
       icon: "\u{1F3D7}\u{FE0F}",
       prerequisites: ["B3"],
@@ -437,7 +443,13 @@ export const dataEngineerTrack: Track = {
       level: "intermediate",
       description:
         "Insert, update, and delete data with INSERT INTO, UPDATE, DELETE, and COPY/bulk loading patterns.",
-      exerciseIds: [],
+      exerciseIds: [
+        "56-bulk-insert-staging",
+        "57-insert-select-transform",
+        "58-update-from-join",
+        "59-delete-orphan-records",
+        "60-create-table-as-select",
+      ],
       skills: ["INSERT", "UPDATE", "DELETE", "COPY", "Bulk loading"],
       icon: "\u{1F4E5}",
       prerequisites: ["B3"],
@@ -448,7 +460,13 @@ export const dataEngineerTrack: Track = {
       level: "intermediate",
       description:
         "Choose appropriate data types, apply CHECK constraints, and handle type casting with CAST.",
-      exerciseIds: [],
+      exerciseIds: [
+        "61-primary-key-design",
+        "62-foreign-key-relationships",
+        "63-check-constraints",
+        "64-not-null-defaults",
+        "65-data-type-casting",
+      ],
       skills: ["Data types", "CHECK", "CAST", "NOT NULL", "DEFAULT"],
       icon: "\u{1F3AF}",
       prerequisites: ["DE-I1"],
@@ -461,7 +479,13 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Design and query star schemas with fact tables (measures + FKs) joined to dimension tables (attributes).",
-      exerciseIds: [],
+      exerciseIds: [
+        "66-fact-table-design",
+        "67-dimension-table-design",
+        "68-date-dimension",
+        "69-star-schema-queries",
+        "70-snowflake-extension",
+      ],
       skills: ["Fact tables", "Dimension tables", "Star schema queries"],
       icon: "\u{2B50}",
       prerequisites: ["DE-I1", "I1"],
@@ -472,7 +496,13 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Implement slowly changing dimensions with valid_from, valid_to, and is_current for historical tracking.",
-      exerciseIds: [],
+      exerciseIds: [
+        "71-scd-type1-overwrite",
+        "72-scd2-structure",
+        "73-scd2-insert-version",
+        "74-scd2-current-snapshot",
+        "75-scd2-point-in-time",
+      ],
       skills: ["SCD Type 2", "valid_from/valid_to", "is_current"],
       icon: "\u{1F4C6}",
       prerequisites: ["DE-A1"],
@@ -483,7 +513,13 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Perform atomic insert-or-update operations for idempotent pipeline loading using MERGE and ON CONFLICT.",
-      exerciseIds: [],
+      exerciseIds: [
+        "76-insert-or-replace",
+        "77-merge-basics",
+        "78-merge-conditional",
+        "79-merge-with-delete",
+        "80-idempotent-dimension-load",
+      ],
       skills: ["MERGE", "UPSERT", "ON CONFLICT", "Idempotent loads"],
       icon: "\u{1F504}",
       prerequisites: ["DE-I2"],
@@ -494,7 +530,12 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Implement watermark patterns (max updated_at) and partition overwrite (DELETE+INSERT) for incremental data loading.",
-      exerciseIds: [],
+      exerciseIds: [
+        "81-watermark-pattern",
+        "82-partition-overwrite",
+        "83-batch-id-tracking",
+        "84-idempotent-reload",
+      ],
       skills: ["Watermark pattern", "Partition overwrite", "Incremental ETL"],
       icon: "\u{1F4C8}",
       prerequisites: ["DE-A3"],
@@ -505,7 +546,12 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Traverse hierarchies, generate series, and solve graph problems using recursive common table expressions.",
-      exerciseIds: [],
+      exerciseIds: [
+        "85-recursive-hierarchy-depth",
+        "86-recursive-path-concat",
+        "87-recursive-bom-explosion",
+        "88-recursive-category-tree",
+      ],
       skills: ["Recursive CTE", "Hierarchy traversal", "Graph queries"],
       icon: "\u{1F503}",
       prerequisites: ["I2"],
@@ -516,7 +562,13 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Write SQL-based data quality checks: NULL completeness, uniqueness, referential integrity, and freshness.",
-      exerciseIds: [],
+      exerciseIds: [
+        "89-null-completeness-check",
+        "90-uniqueness-validation",
+        "91-referential-integrity",
+        "92-range-freshness-check",
+        "93-quality-suite-report",
+      ],
       skills: ["NULL checks", "Uniqueness", "Referential integrity", "Freshness"],
       icon: "\u{2705}",
       prerequisites: ["DE-I1", "I2"],
@@ -527,7 +579,12 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Analyze execution plans, optimize joins, and apply indexing strategies for large datasets.",
-      exerciseIds: [],
+      exerciseIds: [
+        "94-explain-basics",
+        "95-sargable-queries",
+        "96-select-specificity",
+        "97-exists-vs-in-performance",
+      ],
       skills: ["EXPLAIN", "Join optimization", "Indexing", "Partitioning"],
       icon: "\u{26A1}",
       prerequisites: ["DE-A1", "I1"],
@@ -538,7 +595,12 @@ export const dataEngineerTrack: Track = {
       level: "advanced",
       description:
         "Query nested data structures using DuckDB's STRUCT, LIST, and JSON functions for semi-structured data.",
-      exerciseIds: [],
+      exerciseIds: [
+        "98-list-aggregation",
+        "99-list-unnesting",
+        "100-struct-access",
+        "101-json-processing",
+      ],
       skills: ["STRUCT", "LIST", "JSON", "UNNEST"],
       icon: "\u{1F4E6}",
       prerequisites: ["DE-I3"],

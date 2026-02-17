@@ -1,0 +1,49 @@
+import { describe, it, expect } from "vitest";
+import { exercise } from "./exercise";
+import { validateResult } from "@/lib/db/validator";
+import type { QueryResult } from "@/lib/exercises/types";
+
+describe(exercise.title, () => {
+  it("has valid structure", () => {
+    expect(exercise.id).toBe("120-gap-detection");
+    expect(exercise.testCases.length).toBeGreaterThanOrEqual(2);
+    expect(exercise.solutionQuery).toBeTruthy();
+    expect(exercise.schema).toContain("CREATE TABLE");
+  });
+
+  it("solution matches expected output for default test case", () => {
+    const tc = exercise.testCases[0];
+    const mockResult: QueryResult = {
+      columns: tc.expectedColumns,
+      rows: tc.expectedRows,
+      rowCount: tc.expectedRows.length,
+      executionTimeMs: 0,
+    };
+    const result = validateResult(tc, mockResult);
+    expect(result.passed).toBe(true);
+  });
+
+  it("empty result when no gaps exist", () => {
+    const tc = exercise.testCases[1];
+    const mockResult: QueryResult = {
+      columns: tc.expectedColumns,
+      rows: [],
+      rowCount: 0,
+      executionTimeMs: 0,
+    };
+    const result = validateResult(tc, mockResult);
+    expect(result.passed).toBe(true);
+  });
+
+  it("rejects wrong row count", () => {
+    const tc = exercise.testCases[0];
+    const wrongResult: QueryResult = {
+      columns: tc.expectedColumns,
+      rows: tc.expectedRows.slice(0, 1),
+      rowCount: 1,
+      executionTimeMs: 0,
+    };
+    const result = validateResult(tc, wrongResult);
+    expect(result.passed).toBe(false);
+  });
+});

@@ -371,22 +371,63 @@ B4. NULL Handling & CASE     →   I4. Window Fns: Analytics      →   A4. Funn
 
 ## Existing Exercises Mapping
 
-The platform already has 10 exercises. Here's where they fit in this roadmap:
+The platform has 121 exercises. Here's where the window function exercises fit in this roadmap:
 
-| Existing Exercise | Module |
-|-------------------|--------|
-| `01-top-n-per-group` | I3. Window Functions: Ranking |
-| `02-running-total` | A1. Running Totals & Moving Averages |
-| `03-yoy-growth` | I4. Window Functions: Analytics |
-| `04-gap-and-island` | A2. Gaps & Islands |
+### I3. Window Functions: Ranking (8 exercises)
+
+| Exercise | Title | Difficulty | Pattern |
+|----------|-------|-----------|---------|
+| `01-top-n-per-group` | Top N Per Group | medium | RANK + PARTITION BY |
+| `102-row-number-basics` | Number Orders Chronologically | medium | ROW_NUMBER basics |
+| `103-rank-vs-dense-rank` | Sales Ranking with Ties | medium | DENSE_RANK comparison |
+| `104-ntile-quartiles` | Customer Spending Quartiles | medium | NTILE segmentation |
+| `105-percent-rank-salary` | Salary Percentile Ranking | medium | PERCENT_RANK |
+| `106-deduplication-latest-record` | Deduplicate Customer Addresses | medium | ROW_NUMBER dedup |
+| `107-top-performers-region` | Top Salesperson Per Region Per Quarter | medium | Aggregate + RANK |
+| `108-rfm-segmentation` | RFM Customer Segmentation | hard | Multi-NTILE + CTEs |
+
+### I4. Window Functions: Analytics (7 exercises)
+
+| Exercise | Title | Difficulty | Pattern |
+|----------|-------|-----------|---------|
+| `03-yoy-growth` | Year-over-Year Growth | hard | LAG + PARTITION BY month |
+| `109-lag-previous-month` | Previous Month Revenue Comparison | medium | LAG basics |
+| `110-lead-next-event` | Next Appointment Scheduling | medium | LEAD basics |
+| `111-mom-growth` | Month-over-Month User Signup Growth | medium | LAG + growth formula |
+| `112-first-last-value` | First and Last Purchase Per Customer | medium | FIRST_VALUE/LAST_VALUE |
+| `113-period-comparison` | Same Month Last Year Comparison | hard | LAG + PARTITION BY month |
+| `114-trend-detection` | Detect Consecutive Sales Decline | hard | LAG + running groups |
+
+### A1. Running Totals & Moving Averages (5 exercises)
+
+| Exercise | Title | Difficulty | Pattern |
+|----------|-------|-----------|---------|
+| `02-running-total` | Running Total & Moving Average | medium | SUM/AVG OVER frames |
+| `115-running-count` | Cumulative User Signups | hard | SUM OVER running total |
+| `116-rows-vs-range` | ROWS vs RANGE Frame Comparison | hard | Frame specification |
+| `117-partitioned-running-total` | Cumulative Spending Per Customer | hard | Partitioned SUM OVER |
+| `118-growth-target-tracking` | Revenue Target Progress Tracking | hard | Running total + % |
+
+### A2. Gaps & Islands (5 exercises)
+
+| Exercise | Title | Difficulty | Pattern |
+|----------|-------|-----------|---------|
+| `04-gap-and-island` | Login Streaks (Gap & Island) | hard | ROW_NUMBER subtraction |
+| `09-consecutive-days` | Consecutive Days | hard | Gap & island variant |
+| `119-island-grouping` | Group Consecutive Active Days | hard | Island detection |
+| `120-gap-detection` | Find Missing Invoice Numbers | hard | LEAD gap detection |
+| `121-session-detection` | Sessionize Page Views | hard | LAG-based sessions |
+
+### Other modules (existing exercises)
+
+| Exercise | Module |
+|----------|--------|
 | `05-employee-hierarchy` | (Shared with DE — Recursive CTEs) |
 | `06-date-series` | I6. Date & String Functions / (Shared with DE) |
 | `07-cohort-retention` | A3. Cohort Retention Analysis |
 | `08-funnel-analysis` | A4. Funnel Analysis |
-| `09-consecutive-days` | A2. Gaps & Islands |
 | `10-anti-join` | I5. Anti-joins & Set Operations |
-
-**Coverage gap**: The existing 10 exercises are all Intermediate or Advanced. The entire Beginner level (B1–B4) and several Intermediate modules (I1, I2, I7) need to be built from scratch.
+| `11-50` | B1–B4, I1–I2 (Beginner & Intermediate foundations) |
 
 ---
 

@@ -8,7 +8,7 @@ IMPORTANT: Before creating any exercise, read @plan.md for the global vision and
 - @roadmap/data_analyst.md — ~80 exercises, analytics patterns, business metrics
 - @roadmap/data_engineer.md — ~85 exercises, schema design, pipeline SQL, optimization
 
-**Current state**: 101 exercises total. DA track exercises 1-50, DE track exercises 51-101 (all 11 modules implemented: DE-I1 through DE-A8).
+**Current state**: 121 exercises total. DA track exercises 1-50 + 102-121 (window functions), DE track exercises 51-101 (all 11 modules implemented: DE-I1 through DE-A8). Window function modules I3, I4, A1, A2 are now comprehensive.
 
 Every exercise belongs to a **track** (DA, DE, or shared), a **module** (e.g., I3 = Intermediate Window Functions: Ranking), and a **business domain** (e-commerce, SaaS, marketing, product analytics, finance, data platform, HR).
 

@@ -101,6 +101,26 @@ import { exercise as ex98 } from "@/exercises/98-list-aggregation/exercise";
 import { exercise as ex99 } from "@/exercises/99-list-unnesting/exercise";
 import { exercise as ex100 } from "@/exercises/100-struct-access/exercise";
 import { exercise as ex101 } from "@/exercises/101-json-processing/exercise";
+import { exercise as ex102 } from "@/exercises/102-row-number-basics/exercise";
+import { exercise as ex103 } from "@/exercises/103-rank-vs-dense-rank/exercise";
+import { exercise as ex104 } from "@/exercises/104-ntile-quartiles/exercise";
+import { exercise as ex105 } from "@/exercises/105-percent-rank-salary/exercise";
+import { exercise as ex106 } from "@/exercises/106-deduplication-latest-record/exercise";
+import { exercise as ex107 } from "@/exercises/107-top-performers-region/exercise";
+import { exercise as ex108 } from "@/exercises/108-rfm-segmentation/exercise";
+import { exercise as ex109 } from "@/exercises/109-lag-previous-month/exercise";
+import { exercise as ex110 } from "@/exercises/110-lead-next-event/exercise";
+import { exercise as ex111 } from "@/exercises/111-mom-growth/exercise";
+import { exercise as ex112 } from "@/exercises/112-first-last-value/exercise";
+import { exercise as ex113 } from "@/exercises/113-period-comparison/exercise";
+import { exercise as ex114 } from "@/exercises/114-trend-detection/exercise";
+import { exercise as ex115 } from "@/exercises/115-running-count/exercise";
+import { exercise as ex116 } from "@/exercises/116-rows-vs-range/exercise";
+import { exercise as ex117 } from "@/exercises/117-partitioned-running-total/exercise";
+import { exercise as ex118 } from "@/exercises/118-growth-target-tracking/exercise";
+import { exercise as ex119 } from "@/exercises/119-island-grouping/exercise";
+import { exercise as ex120 } from "@/exercises/120-gap-detection/exercise";
+import { exercise as ex121 } from "@/exercises/121-session-detection/exercise";
 
 export const exercises: Exercise[] = [
   ex01, ex02, ex03, ex04, ex05,
@@ -124,6 +144,10 @@ export const exercises: Exercise[] = [
   ex89, ex90, ex91, ex92, ex93,
   ex94, ex95, ex96, ex97,
   ex98, ex99, ex100, ex101,
+  ex102, ex103, ex104, ex105, ex106,
+  ex107, ex108, ex109, ex110, ex111,
+  ex112, ex113, ex114, ex115, ex116,
+  ex117, ex118, ex119, ex120, ex121,
 ];
 
 export function getExercise(id: string): Exercise | undefined {

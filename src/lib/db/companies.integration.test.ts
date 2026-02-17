@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { describe, it, expect } from "vitest";
 import { neonCart } from "@/lib/companies/neon-cart";
+import { dataflow } from "@/lib/companies/dataflow";
+import { pixelAds } from "@/lib/companies/pixelads";
+import { cashBee } from "@/lib/companies/cashbee";
+import { talentHub } from "@/lib/companies/talenthub";
+import { cloudForge } from "@/lib/companies/cloudforge";
+import { freshBowl } from "@/lib/companies/freshbowl";
+import { streamPulse } from "@/lib/companies/streampulse";
 import { validateResult } from "@/lib/db/validator";
 import type { QueryResult } from "@/lib/exercises/types";
 import type { CompanyProfile } from "@/lib/companies/types";
@@ -140,3 +147,10 @@ function testCompany(company: CompanyProfile) {
 
 // Test all companies
 testCompany(neonCart);
+testCompany(dataflow);
+testCompany(pixelAds);
+testCompany(cashBee);
+testCompany(talentHub);
+testCompany(cloudForge);
+testCompany(freshBowl);
+testCompany(streamPulse);

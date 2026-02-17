@@ -34,7 +34,7 @@ export const companies: CompanySummary[] = [
     icon: "🔄",
     track: "DA Intermediate–Advanced",
     trackFr: "DA Intermediaire–Avance",
-    ready: false,
+    ready: true,
   },
   {
     id: "pixelads",
@@ -46,7 +46,7 @@ export const companies: CompanySummary[] = [
     icon: "📊",
     track: "DA Intermediate",
     trackFr: "DA Intermediaire",
-    ready: false,
+    ready: true,
   },
   {
     id: "cashbee",
@@ -58,7 +58,7 @@ export const companies: CompanySummary[] = [
     icon: "🐝",
     track: "DA Advanced",
     trackFr: "DA Avance",
-    ready: false,
+    ready: true,
   },
   {
     id: "talenthub",
@@ -70,7 +70,7 @@ export const companies: CompanySummary[] = [
     icon: "👥",
     track: "DA Intermediate",
     trackFr: "DA Intermediaire",
-    ready: false,
+    ready: true,
   },
   {
     id: "cloudforge",
@@ -82,7 +82,7 @@ export const companies: CompanySummary[] = [
     icon: "⚒️",
     track: "DE Intermediate–Advanced",
     trackFr: "DE Intermediaire–Avance",
-    ready: false,
+    ready: true,
   },
   {
     id: "freshbowl",
@@ -94,7 +94,7 @@ export const companies: CompanySummary[] = [
     icon: "🥗",
     track: "DA Beginner",
     trackFr: "DA Debutant",
-    ready: false,
+    ready: true,
   },
   {
     id: "streampulse",
@@ -106,6 +106,6 @@ export const companies: CompanySummary[] = [
     icon: "🎵",
     track: "DA Intermediate–Advanced",
     trackFr: "DA Intermediaire–Avance",
-    ready: false,
+    ready: true,
   },
 ];

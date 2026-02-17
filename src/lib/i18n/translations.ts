@@ -125,6 +125,19 @@ export const translations = {
   "level.intermediate.desc": { en: "Compose complex queries", fr: "Composez des requetes complexes" },
   "level.advanced.desc": { en: "Master analytical patterns", fr: "Maitrisez les patterns analytiques" },
 
+  // Footer
+  "footer.tagline": {
+    en: "Open-source SQL practice — runs in your browser",
+    fr: "Entrainement SQL open-source — tourne dans votre navigateur",
+  },
+
+  // Roadmap company CTA
+  "roadmap.companyCta": {
+    en: "Put your skills to the test on a real company!",
+    fr: "Mets tes competences a l'epreuve sur une vraie entreprise !",
+  },
+  "roadmap.tryCompany": { en: "Try", fr: "Essayer" },
+
   // Module statuses
   "status.notStarted": { en: "Not Started", fr: "Non commence" },
   "status.inProgress": { en: "In Progress", fr: "En cours" },

@@ -6,7 +6,8 @@
 
 SQL today. Pandas tomorrow. Zero setup — runs entirely in your browser.
 
-[![50 exercises](https://img.shields.io/badge/exercises-50-blue)]()
+[![101 exercises](https://img.shields.io/badge/exercises-101-blue)]()
+[![8 companies](https://img.shields.io/badge/companies-8-purple)]()
 [![2 tracks](https://img.shields.io/badge/tracks-DA%20%7C%20DE-green)]()
 [![DuckDB-WASM](https://img.shields.io/badge/engine-DuckDB--WASM-orange)]()
 
@@ -25,11 +26,12 @@ Powered by **DuckDB-WASM**, everything runs locally in your browser. Your progre
 
 ## Features
 
-- **50 exercises** across beginner, intermediate, and advanced modules
-- **2 career tracks** — Data Analyst and Data Engineer, with shared foundations and specialized paths
+- **101 exercises** across beginner, intermediate, and advanced modules
+- **8 company scenarios** — NeonCart, DataFlow, PixelAds, CashBee, TalentHub, CloudForge, FreshBowl, StreamPulse — each with its own data and business questions
+- **2 career tracks** — Data Analyst (50 exercises) and Data Engineer (51 exercises), with shared foundations and specialized paths
 - **Real business scenarios** — every exercise is framed as a question a data team would actually ask
 - **Instant feedback** — submit your query, see results and validation in real time
-- **CTE pipeline mini-projects** — build multi-step analytical pipelines from raw data to executive dashboards
+- **Bilingual** — full EN/FR support with one-click toggle
 - **Dark & light mode** — easy on the eyes, day or night
 - **Activity tracking** — GitHub-style contribution graph to keep you motivated
 - **Progress by module** — track completion across structured learning paths
@@ -44,8 +46,8 @@ From `SELECT` basics to FAANG-level analytical SQL.
 | Level | Modules | Exercises | Topics |
 |-------|---------|-----------|--------|
 | Beginner | B1-B4 | 26 | SELECT, aggregation, basic joins, NULL handling |
-| Intermediate | I1-I7 | 16+ | Multi-table joins, CTEs, subqueries, window functions, anti-joins |
-| Advanced | A1-A8 | 8+ | Running totals, gaps & islands, cohort retention, funnel analysis |
+| Intermediate | I1-I7 | 16 | Multi-table joins, CTEs, subqueries, window functions, anti-joins |
+| Advanced | A1-A8 | 8 | Running totals, gaps & islands, cohort retention, funnel analysis |
 
 ### Data Engineer
 
@@ -54,14 +56,29 @@ From schema design to pipeline SQL, optimization, and data quality.
 | Level | Modules | Exercises | Topics |
 |-------|---------|-----------|--------|
 | Beginner | B1-B4 | 26 (shared) | SELECT, aggregation, basic joins, NULL handling |
-| Intermediate | I1-I2 + DE | 16+ | Multi-table joins, CTEs, DDL, DML, data types |
-| Advanced | DE-A1-A8 | Coming soon | Star schema, SCD Type 2, MERGE, incremental loads, data quality |
+| Intermediate | DE-I1-I2 | 10 | DDL, DML, data types, constraints |
+| Advanced | DE-A1-A8 | 41 | Star schema, SCD Type 2, MERGE, incremental loads, data quality |
+
+### Company Scenarios
+
+Practice on realistic company datasets with multi-exercise storylines.
+
+| Company | Sector | Difficulty |
+|---------|--------|------------|
+| NeonCart | E-commerce | Beginner |
+| FreshBowl | Foodtech / Delivery | Beginner |
+| PixelAds | Marketing / Adtech | Intermediate |
+| TalentHub | HR / Recruitment | Intermediate |
+| CloudForge | Data Platform | Intermediate-Advanced |
+| DataFlow | SaaS B2B | Intermediate-Advanced |
+| CashBee | Fintech | Advanced |
+| StreamPulse | Streaming / Media | Advanced |
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 14 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Language | TypeScript (strict mode) |
 | SQL Engine | DuckDB-WASM |
 | Editor | CodeMirror 6 |
@@ -73,8 +90,8 @@ From schema design to pipeline SQL, optimization, and data quality.
 ## Quick Start
 
 ```bash
-git clone https://github.com/practicedata/practicedata.git
-cd practicedata
+git clone https://github.com/lucaszub/sql-practice.git
+cd sql-practice
 pnpm install
 pnpm dev
 ```
@@ -102,15 +119,19 @@ src/
       roadmap/
         data-analyst/           # DA track roadmap
         data-engineer/          # DE track roadmap
+      companies/                # Company selection page
+      company/[companyId]/      # Company scenario workspace
     exercise/[id]/              # Exercise editor + validator
   components/                   # React components (shadcn/ui)
-  exercises/                    # 50 exercises
+  exercises/                    # 101 exercises
     {id}/
       exercise.ts               # Schema, solution, test cases, explanation
       exercise.test.ts          # Unit tests
   lib/
+    companies/                  # Company profiles (schema, exercises, metadata)
     db/                         # DuckDB init, query runner, validator
     exercises/                  # Types, registry, module/track definitions
+    i18n/                       # EN/FR translations
     store/                      # Zustand stores (progress, session)
 ```
 
@@ -131,12 +152,15 @@ Conventions:
 ## Roadmap
 
 - [x] Beginner SQL — 26 exercises (B1-B4: SELECT, aggregation, joins, NULL handling)
-- [x] Intermediate SQL — 14 exercises (I1-I2: multi-table joins, subqueries, CTEs)
-- [x] CTE pipeline mini-projects (e-commerce summary, SaaS KPI dashboard)
+- [x] Intermediate DA — 16 exercises (I1-I7: multi-table joins, CTEs, window functions, anti-joins)
+- [x] Advanced DA — 8 exercises (A1-A8: cohort retention, funnel analysis, revenue metrics)
+- [x] Intermediate DE — 10 exercises (DE-I1-I2: DDL, DML, data types)
+- [x] Advanced DE — 41 exercises (DE-A1-A8: star schema, SCD2, MERGE, incremental loads, data quality)
 - [x] Two career tracks with dedicated roadmap pages
-- [ ] Intermediate SQL — window functions, anti-joins, date/string functions (I3-I7)
-- [ ] Advanced DA — cohort retention, funnel analysis, revenue metrics (expand A1-A8)
-- [ ] Advanced DE — star schema, SCD2, MERGE, incremental loads, data quality (DE-A1-A8)
+- [x] 8 company scenario profiles with interactive SQL workspace
+- [x] Bilingual EN/FR interface
+- [x] Global footer with GitHub link
+- [x] Company CTA banners in roadmap level sections
 - [ ] Pandas exercises
 
 ## Contributing

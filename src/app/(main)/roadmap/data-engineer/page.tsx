@@ -3,8 +3,22 @@
 import { useMemo } from "react";
 import { dataEngineerTrack, getModulesByLevel } from "@/lib/exercises/modules";
 import { useProgressStore } from "@/lib/store/progress";
-import { LevelSection } from "@/components/roadmap/level-section";
+import { LevelSection, type CompanySuggestion } from "@/components/roadmap/level-section";
 import { useLocale } from "@/lib/i18n";
+
+const deCompanySuggestions: Record<string, CompanySuggestion[]> = {
+  beginner: [
+    { id: "neon-cart", name: "NeonCart", icon: "🛒" },
+    { id: "freshbowl", name: "FreshBowl", icon: "🥗" },
+  ],
+  intermediate: [
+    { id: "cloudforge", name: "CloudForge", icon: "⚒️" },
+  ],
+  advanced: [
+    { id: "cloudforge", name: "CloudForge", icon: "⚒️" },
+    { id: "dataflow", name: "DataFlow", icon: "🔄" },
+  ],
+};
 
 export default function DataEngineerRoadmapPage() {
   const { t } = useLocale();
@@ -48,9 +62,9 @@ export default function DataEngineerRoadmapPage() {
       </div>
 
       <div className="space-y-10">
-        <LevelSection level="beginner" modules={beginnerModules} track={dataEngineerTrack} solvedIds={solvedIds} />
-        <LevelSection level="intermediate" modules={intermediateModules} track={dataEngineerTrack} solvedIds={solvedIds} />
-        <LevelSection level="advanced" modules={advancedModules} track={dataEngineerTrack} solvedIds={solvedIds} />
+        <LevelSection level="beginner" modules={beginnerModules} track={dataEngineerTrack} solvedIds={solvedIds} companySuggestions={deCompanySuggestions.beginner} />
+        <LevelSection level="intermediate" modules={intermediateModules} track={dataEngineerTrack} solvedIds={solvedIds} companySuggestions={deCompanySuggestions.intermediate} />
+        <LevelSection level="advanced" modules={advancedModules} track={dataEngineerTrack} solvedIds={solvedIds} companySuggestions={deCompanySuggestions.advanced} />
       </div>
     </div>
   );

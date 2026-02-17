@@ -3,8 +3,23 @@
 import { useMemo } from "react";
 import { dataAnalystTrack, getModulesByLevel } from "@/lib/exercises/modules";
 import { useProgressStore } from "@/lib/store/progress";
-import { LevelSection } from "@/components/roadmap/level-section";
+import { LevelSection, type CompanySuggestion } from "@/components/roadmap/level-section";
 import { useLocale } from "@/lib/i18n";
+
+const daCompanySuggestions: Record<string, CompanySuggestion[]> = {
+  beginner: [
+    { id: "neon-cart", name: "NeonCart", icon: "🛒" },
+    { id: "freshbowl", name: "FreshBowl", icon: "🥗" },
+  ],
+  intermediate: [
+    { id: "pixelads", name: "PixelAds", icon: "📊" },
+    { id: "talenthub", name: "TalentHub", icon: "👥" },
+  ],
+  advanced: [
+    { id: "cashbee", name: "CashBee", icon: "🐝" },
+    { id: "streampulse", name: "StreamPulse", icon: "🎵" },
+  ],
+};
 
 export default function DataAnalystRoadmapPage() {
   const { t } = useLocale();
@@ -48,9 +63,9 @@ export default function DataAnalystRoadmapPage() {
       </div>
 
       <div className="space-y-10">
-        <LevelSection level="beginner" modules={beginnerModules} track={dataAnalystTrack} solvedIds={solvedIds} />
-        <LevelSection level="intermediate" modules={intermediateModules} track={dataAnalystTrack} solvedIds={solvedIds} />
-        <LevelSection level="advanced" modules={advancedModules} track={dataAnalystTrack} solvedIds={solvedIds} />
+        <LevelSection level="beginner" modules={beginnerModules} track={dataAnalystTrack} solvedIds={solvedIds} companySuggestions={daCompanySuggestions.beginner} />
+        <LevelSection level="intermediate" modules={intermediateModules} track={dataAnalystTrack} solvedIds={solvedIds} companySuggestions={daCompanySuggestions.intermediate} />
+        <LevelSection level="advanced" modules={advancedModules} track={dataAnalystTrack} solvedIds={solvedIds} companySuggestions={daCompanySuggestions.advanced} />
       </div>
     </div>
   );

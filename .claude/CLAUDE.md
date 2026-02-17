@@ -27,9 +27,14 @@ Every exercise belongs to a **track** (DA, DE, or shared), a **module** (e.g., I
 - `src/exercises/{id}/` — exercise.ts + exercise.test.ts (ID format: `{number}-{slug}`)
 - `src/lib/db/` — DuckDB init, query runner, validator
 - `src/lib/exercises/` — types.ts (Exercise, TestCase, QueryResult), index.ts (registry)
+- `src/lib/companies/` — Company profiles (types, index, per-company modules)
+- `src/lib/i18n/` — EN/FR translations and locale hook
 - `src/lib/store/` — Zustand stores (progress, exercise-session)
 - `src/components/` — React components (one per file, named export)
-- `src/app/` — Next.js pages (home, exercise/[id])
+- `src/components/roadmap/` — Roadmap components (level-section, module-card)
+- `src/app/(main)/` — Main layout (nav + footer), home, roadmaps, companies
+- `src/app/(main)/company/[companyId]/` — Company scenario workspace
+- `src/app/exercise/[id]/` — Exercise editor + validator
 
 ## Commands
 

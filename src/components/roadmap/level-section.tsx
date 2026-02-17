@@ -1,19 +1,27 @@
 "use client";
 
+import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ModuleCard } from "./module-card";
 import type { Module } from "@/lib/exercises/modules";
 import { getModuleProgress, type Track } from "@/lib/exercises/modules";
 import { useLocale } from "@/lib/i18n";
 
+export interface CompanySuggestion {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 interface LevelSectionProps {
   level: "beginner" | "intermediate" | "advanced";
   modules: Module[];
   track: Track;
   solvedIds: Set<string>;
+  companySuggestions?: CompanySuggestion[];
 }
 
-export function LevelSection({ level, modules, track, solvedIds }: LevelSectionProps) {
+export function LevelSection({ level, modules, track, solvedIds, companySuggestions }: LevelSectionProps) {
   const { t } = useLocale();
 
   const levelConfig = {
@@ -76,6 +84,26 @@ export function LevelSection({ level, modules, track, solvedIds }: LevelSectionP
           );
         })}
       </div>
+
+      {companySuggestions && companySuggestions.length > 0 && (
+        <div className="bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200/40 dark:border-amber-800/30 rounded-lg ml-5 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+          <p className="text-sm font-medium">
+            🏢 {t("roadmap.companyCta")}
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {companySuggestions.map((company) => (
+              <Link
+                key={company.id}
+                href={`/company/${company.id}`}
+                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-amber-100/80 dark:bg-amber-900/30 hover:bg-amber-200/80 dark:hover:bg-amber-900/50 border border-amber-300/50 dark:border-amber-700/40 transition-colors"
+              >
+                <span>{company.icon}</span>
+                <span>{company.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

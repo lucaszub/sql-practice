@@ -1,0 +1,18 @@
+---
+# VPS Hardening + Docker Setup Playbook
+# Usage: ansible-playbook -i inventory.ini playbook.yml
+- name: Secure and provision VPS
+  hosts: vps
+  become: true
+  vars:
+    deploy_user: deploy
+    ssh_port: 22
+
+  roles:
+    - base
+    - users
+    - ssh
+    - ufw
+    - fail2ban
+    - upgrades
+    - docker

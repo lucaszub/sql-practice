@@ -1,327 +1,372 @@
-# Plan: Add Pandas Coding Option (SQL or Pandas toggle)
+# Plan: Pandas Track — A Third Learning Path
 
 ## Overview
 
-Allow users to solve exercises using either SQL (current behavior) or Python Pandas. A mode toggle in the exercise page lets users switch between the two. Both modes validate against the same expected output (columns + rows), ensuring equivalent learning outcomes.
+Add a **Pandas track** as a third career path alongside Data Analyst (SQL) and Data Engineer (SQL). Users get a dedicated `/roadmap/pandas` page with its own module progression from basic DataFrame operations to advanced analytics patterns. Exercises can be solved in **SQL or Pandas** — a toggle on each exercise lets users switch modes.
+
+The Pandas roadmap teaches Pandas idioms in a structured way, not just "translate SQL to Pandas". It has its own logic: filtering → selection → groupby → merge → reshaping → window ops → performance.
 
 ---
 
-## Architecture Decisions
+## Pandas Roadmap: Module Breakdown (~60 exercises)
+
+### Beginner (4 modules, ~20 exercises)
+
+#### PB1 — DataFrame Basics
+**Goal**: Load data, inspect structure, select columns.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Display first 10 orders | `df.head()`, `df.shape`, `df.info()` |
+| 2 | Select specific columns from customers table | `df[['col1', 'col2']]`, `df.col` |
+| 3 | Get unique product categories | `df['col'].unique()`, `df['col'].nunique()` |
+| 4 | Check data types and missing values | `df.dtypes`, `df.isna().sum()` |
+| 5 | Rename columns for a clean report | `df.rename(columns={...})` |
+
+**Skills**: `head`, `shape`, `columns`, `dtypes`, `info`, `unique`, `rename`
+**Icon**: `🐼`
+**Prerequisites**: none
+
+#### PB2 — Filtering & Boolean Indexing
+**Goal**: Filter rows using conditions, combine filters.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Find orders above $100 | `df[df['amount'] > 100]` |
+| 2 | Filter products in specific categories | `df[df['cat'].isin([...])]` |
+| 3 | Find orders in a date range | `df[(df['date'] >= ...) & (df['date'] <= ...)]` |
+| 4 | Search product names containing a keyword | `df[df['name'].str.contains('...')]` |
+| 5 | Combine multiple conditions (AND/OR) | `&`, `|`, `~` operators |
+| 6 | Find customers with missing email | `df[df['email'].isna()]` |
+
+**Skills**: boolean indexing, `isin`, `str.contains`, `isna`, `between`, `&`/`|`/`~`
+**Icon**: `🔍`
+**Prerequisites**: `PB1`
+
+#### PB3 — Sorting & Top-N
+**Goal**: Sort data, get top/bottom results.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Sort orders by date descending | `df.sort_values('col', ascending=False)` |
+| 2 | Top 5 customers by total spend | `df.nlargest(5, 'col')` |
+| 3 | Bottom 3 products by rating | `df.nsmallest(3, 'col')` |
+| 4 | Sort by multiple columns | `df.sort_values(['col1', 'col2'])` |
+| 5 | Reset index after sorting | `df.reset_index(drop=True)` |
+
+**Skills**: `sort_values`, `nlargest`, `nsmallest`, `head`, `reset_index`
+**Icon**: `📊`
+**Prerequisites**: `PB2`
+
+#### PB4 — Basic Aggregation
+**Goal**: Summarize data with groupby and aggregate functions.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Count orders per status | `df.groupby('status').size()` |
+| 2 | Total revenue per product category | `df.groupby('cat')['amount'].sum()` |
+| 3 | Average order value per customer | `df.groupby('customer_id')['amount'].mean()` |
+| 4 | Multiple aggregations at once | `df.groupby(...).agg({'col': ['sum', 'mean']})` |
+| 5 | Filter groups (equivalent of HAVING) | `grouped.filter(lambda g: g['amount'].sum() > 1000)` |
+
+**Skills**: `groupby`, `size`, `sum`, `mean`, `count`, `agg`, `filter`
+**Icon**: `📈`
+**Prerequisites**: `PB2`
+
+---
+
+### Intermediate (5 modules, ~25 exercises)
+
+#### PI1 — Merge & Join
+**Goal**: Combine DataFrames like SQL JOINs.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Join orders with customer names | `pd.merge(orders, customers, on='customer_id')` |
+| 2 | Left join to find customers without orders | `pd.merge(..., how='left')` + `isna()` |
+| 3 | Join three tables (orders + products + categories) | chained `merge()` |
+| 4 | Merge on different column names | `left_on=`, `right_on=` |
+| 5 | Anti-join: products never ordered | merge + filter `_merge == 'left_only'` with `indicator=True` |
+
+**Skills**: `pd.merge`, `how=`, `on=`, `left_on/right_on`, `indicator`, `suffixes`
+**Icon**: `🔗`
+**Prerequisites**: `PB4`
+
+#### PI2 — String & DateTime Operations
+**Goal**: Manipulate text and dates.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Extract month from order dates | `df['date'].dt.month` |
+| 2 | Truncate to monthly periods | `df['date'].dt.to_period('M')` |
+| 3 | Calculate days between order and delivery | `(df['delivery'] - df['order']).dt.days` |
+| 4 | Clean product names (lowercase, strip) | `df['name'].str.lower().str.strip()` |
+| 5 | Extract domain from email addresses | `df['email'].str.split('@').str[1]` |
+
+**Skills**: `.dt.`, `.str.`, `to_datetime`, `dt.days`, `str.split`, `str.extract`
+**Icon**: `📅`
+**Prerequisites**: `PB3`
+
+#### PI3 — Missing Data & Cleaning
+**Goal**: Handle NaN, fill values, deduplicate.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Fill missing prices with category average | `df.groupby('cat')['price'].transform(...)` + `fillna()` |
+| 2 | Drop rows where critical columns are null | `df.dropna(subset=['col1', 'col2'])` |
+| 3 | Remove duplicate customer records (keep latest) | `df.sort_values('date').drop_duplicates('email', keep='last')` |
+| 4 | Replace sentinel values (-1, 'N/A') with NaN | `df.replace({-1: np.nan, 'N/A': np.nan})` |
+| 5 | Forward-fill time series gaps | `df.set_index('date').resample('D').ffill()` |
+
+**Skills**: `fillna`, `dropna`, `drop_duplicates`, `replace`, `interpolate`, `ffill`
+**Icon**: `🧹`
+**Prerequisites**: `PB4`
+
+#### PI4 — Advanced GroupBy & Transform
+**Goal**: Complex aggregations, transform, apply.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Percentage of total per category | `transform('sum')` for group totals |
+| 2 | Rank products within each category | `df.groupby('cat')['sales'].rank(method='dense')` |
+| 3 | Custom aggregation function | `.agg(lambda x: ...)` or named agg |
+| 4 | Multiple named aggregations | `.agg(total=('amount', 'sum'), avg=('amount', 'mean'))` |
+| 5 | Cross-tabulation (counts by 2 dimensions) | `pd.crosstab(df['region'], df['status'])` |
+
+**Skills**: `transform`, `rank`, `apply`, named agg, `crosstab`, `value_counts`
+**Icon**: `🔢`
+**Prerequisites**: `PI1`, `PI3`
+
+#### PI5 — Reshaping: Pivot & Melt
+**Goal**: Transform data between wide and long formats.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Monthly revenue pivot table | `df.pivot_table(values='amount', index='month', columns='category')` |
+| 2 | Unpivot quarterly columns to rows | `pd.melt(df, id_vars=['product'], value_vars=['Q1','Q2','Q3','Q4'])` |
+| 3 | Multi-level pivot (region × product × metric) | `pivot_table` with `aggfunc` |
+| 4 | Stack/unstack multi-index | `df.set_index([...]).unstack()` |
+| 5 | Create a summary with margins (totals row/col) | `pivot_table(..., margins=True)` |
+
+**Skills**: `pivot_table`, `melt`, `stack`, `unstack`, `margins`, `aggfunc`
+**Icon**: `🔄`
+**Prerequisites**: `PI4`
+
+---
+
+### Advanced (4 modules, ~18 exercises)
+
+#### PA1 — Window Operations (Rolling, Shift, Rank)
+**Goal**: Pandas equivalent of SQL window functions.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Running total of daily revenue | `df['amount'].cumsum()` |
+| 2 | 7-day moving average of orders | `df['orders'].rolling(7).mean()` |
+| 3 | Month-over-month growth rate | `df['revenue'].pct_change()` |
+| 4 | Previous month comparison with shift | `df['revenue'].shift(1)` |
+| 5 | Expanding max (all-time high) | `df['price'].expanding().max()` |
+
+**Skills**: `cumsum`, `rolling`, `expanding`, `shift`, `pct_change`, `rank`
+**Icon**: `📉`
+**Prerequisites**: `PI4`
+
+#### PA2 — Consecutive Patterns & Complex Logic
+**Goal**: Gaps, islands, streaks — the Pandas way.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Detect login streaks (consecutive days) | `diff() + cumsum()` grouping trick |
+| 2 | Find gaps in daily data | date range comparison |
+| 3 | Session detection (30-min inactivity gap) | `diff() > threshold` → `cumsum()` |
+| 4 | Longest winning streak per player | group consecutive, count max |
+
+**Skills**: `diff`, `cumsum`, `shift`, boolean grouping, gap detection
+**Icon**: `🏝️`
+**Prerequisites**: `PA1`
+
+#### PA3 — Multi-DataFrame & Concat
+**Goal**: Complex merges, concat, combine operations.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Combine monthly CSV files into one DataFrame | `pd.concat([df1, df2, df3])` |
+| 2 | Update master table with new data (upsert-style) | `combine_first` / index-based merge |
+| 3 | Compare two snapshots and find changes | merge with indicator + diff |
+| 4 | Merge-asof: match trades to closest quote | `pd.merge_asof(trades, quotes, on='timestamp')` |
+
+**Skills**: `pd.concat`, `combine_first`, `merge_asof`, `compare`, `indicator`
+**Icon**: `📦`
+**Prerequisites**: `PI1`
+
+#### PA4 — Performance & Method Chaining
+**Goal**: Write idiomatic, efficient Pandas code.
+| # | Exercise Idea | Key Concepts |
+|---|---------------|-------------|
+| 1 | Rewrite `.apply()` as vectorized operations | vectorized `np.where` vs `apply` |
+| 2 | Chain operations with `.pipe()` | `df.pipe(clean).pipe(transform).pipe(aggregate)` |
+| 3 | Use `.query()` for readable filters | `df.query('amount > 100 and status == "shipped"')` |
+| 4 | Optimize memory with category dtype | `df['status'].astype('category')` |
+| 5 | Method chaining: full ETL in one expression | `.assign().query().groupby().agg().reset_index()` |
+
+**Skills**: `pipe`, `assign`, `query`, `eval`, vectorization, `astype('category')`
+**Icon**: `⚡`
+**Prerequisites**: `PA1`, `PA3`
+
+---
+
+## Roadmap Summary
+
+```
+                    PANDAS TRACK (~60 exercises)
+
+ Beginner                Intermediate              Advanced
+ ────────────            ──────────────            ───────────
+ PB1 DataFrame Basics    PI1 Merge & Join          PA1 Window Ops
+ PB2 Filtering           PI2 String & DateTime     PA2 Gaps & Islands
+ PB3 Sorting & Top-N     PI3 Missing Data          PA3 Multi-DataFrame
+ PB4 Basic Aggregation   PI4 Advanced GroupBy      PA4 Performance
+                          PI5 Pivot & Melt
+
+ Prerequisite chain:
+ PB1 → PB2 → PB3
+              PB2 → PB4 → PI1 → PI4 → PA1 → PA2
+                          PI1 → PA3 → PA4
+              PB3 → PI2
+              PB4 → PI3 → PI4 → PI5
+```
+
+---
+
+## Architecture & Implementation
 
 ### Runtime: Pyodide (CPython in WebAssembly)
-- Use the official `pyodide` npm package (v0.29.3+)
-- Lazy-load Pyodide only when the user selects Pandas mode (no impact on SQL-only users)
-- Run in a **Web Worker** to keep UI responsive (mirrors DuckDB-WASM pattern)
-- Pre-load `pandas` and `numpy` packages on first Pandas mode activation
-- Cache via browser (CDN-served WASM, ~17 MB download on first use)
+- Official `pyodide` npm package (v0.29.3+)
+- **Lazy-loaded**: only when user opens the Pandas roadmap or toggles to Pandas mode
+- Runs in a **Web Worker** (mirrors DuckDB-WASM singleton pattern)
+- Pre-loads `pandas` + `numpy` (~17 MB first download, cached after)
 
-### Data Flow: SQL schema → Pandas DataFrames
-- Reuse DuckDB to load the exercise schema (already working)
-- Export each table as JSON from DuckDB (`SELECT * FROM table_name`)
-- Pass JSON to Pyodide Web Worker
-- In Python: `pd.DataFrame(json_data)` for each table, injected as globals
-- User writes Pandas code; the last expression or variable named `result` is returned
-- Convert result DataFrame to `{columns: [...], rows: [...]}` → same `QueryResult` format → same validator
-
-### Editor: CodeMirror 6 with Python support
-- Add `@codemirror/lang-python` for syntax highlighting
-- New `PandasEditor` component (or extend `SqlEditor` to support both)
-- Same keyboard shortcut (Ctrl+Enter) to submit
-
----
-
-## Implementation Steps
-
-### Phase 1: Pyodide Infrastructure (`src/lib/pyodide/`)
-
-**Step 1.1 — Install dependencies**
-```bash
-pnpm add pyodide @codemirror/lang-python
+### Data Flow
+```
+Exercise schema (SQL) → DuckDB loads tables → Export as JSON
+    → Pyodide Web Worker → pd.DataFrame(json) per table
+    → User writes Pandas code → `result` variable extracted
+    → Convert to {columns, rows} → Same validator as SQL
 ```
 
-**Step 1.2 — Pyodide Web Worker (`src/lib/pyodide/pyodide.worker.ts`)**
-
-Create a Web Worker that:
-- Loads Pyodide from CDN
-- Loads pandas + numpy packages
-- Accepts messages: `{ type: 'init' }`, `{ type: 'loadData', tables: {...} }`, `{ type: 'run', code: string }`
-- Returns: `{ type: 'result', data: QueryResult }` or `{ type: 'error', message: string }`
-
-The worker handles:
-1. `init` → `loadPyodide()` + `pyodide.loadPackage(['pandas', 'numpy'])`
-2. `loadData` → For each table name/data pair, create a `pd.DataFrame` in the Python global scope
-3. `run` → Execute user code, extract the `result` variable (must be a DataFrame), convert to JSON
-
-**Step 1.3 — Pyodide singleton (`src/lib/pyodide/pyodide-client.ts`)**
-
-Mirror `src/lib/db/duckdb.ts` pattern:
-```typescript
-"use client";
-
-let worker: Worker | null = null;
-let initializing: Promise<Worker> | null = null;
-let ready = false;
-
-export async function getPyodideWorker(): Promise<Worker> { ... }
-export async function initPyodide(): Promise<void> { ... }
-export async function loadTablesIntoPandas(tables: Record<string, unknown[]>): Promise<void> { ... }
-export async function executePandas(code: string): Promise<QueryResult> { ... }
-```
-
-**Step 1.4 — Pandas query runner (`src/lib/pyodide/pandas-runner.ts`)**
-
-```typescript
-export async function executePandasQuery(
-  db: AsyncDuckDB,
-  schema: string,
-  userCode: string
-): Promise<QueryResult>
-```
-
-This function:
-1. Queries DuckDB for table names: `SELECT table_name FROM information_schema.tables`
-2. For each table, exports data: `SELECT * FROM <table>` → JSON rows
-3. Sends tables to Pyodide worker via `loadTablesIntoPandas()`
-4. Executes user code via `executePandas(userCode)`
-5. Returns `QueryResult` (same format as SQL)
-
----
-
-### Phase 2: Exercise Type & Data Model Changes
-
-**Step 2.1 — Add Pandas fields to `Exercise` type (`src/lib/exercises/types.ts`)**
-
+### Exercise Model Changes (`src/lib/exercises/types.ts`)
 ```typescript
 export type CodingMode = "sql" | "pandas";
 
 export interface Exercise {
   // ... existing fields ...
-
-  // New optional Pandas fields
-  solutionPandas?: string;           // Reference Pandas solution
+  supportedModes?: CodingMode[];           // default: ["sql"], pandas exercises: ["pandas"] or ["sql", "pandas"]
+  solutionPandas?: string;                 // Reference Pandas solution
   solutionPandasExplanation?: string;
   solutionPandasExplanationFr?: string;
-  pandasHint?: string;               // Pandas-specific hint
+  pandasHint?: string;
   pandasHintFr?: string;
-  pandasSetup?: string;              // Optional: extra Python code run before user code
 }
 ```
 
-No change to `TestCase` — validation is the same (compare columns + rows).
-
-**Step 2.2 — Add `CodingMode` to exercise session store (`src/lib/store/exercise-session.ts`)**
-
+### New Track Definition (`src/lib/exercises/modules.ts`)
 ```typescript
-interface ExerciseSessionState {
-  // ... existing fields ...
-  codingMode: CodingMode;
-  currentPandas: string;          // Pandas editor content
-  pyodideReady: boolean;          // Pyodide initialization status
-  pyodideLoading: boolean;        // Loading indicator
-
-  setCodingMode(mode: CodingMode): void;
-  setPandas(code: string): void;
-  setPyodideReady(ready: boolean): void;
-  setPyodideLoading(loading: boolean): void;
-}
+export const pandasTrack: Track = {
+  id: "pandas",
+  name: "Pandas",
+  description: "Master data manipulation with Python Pandas: from DataFrame basics to advanced analytics patterns. ~60 exercises across 13 modules.",
+  modules: [
+    { id: "PB1", name: "DataFrame Basics", level: "beginner", ... },
+    { id: "PB2", name: "Filtering & Boolean Indexing", level: "beginner", ... },
+    // ...
+  ],
+};
 ```
 
-**Step 2.3 — Update progress store (`src/lib/store/progress.ts`)**
+### Exercise Page: Mode Toggle
+- Exercises tagged `["sql", "pandas"]` show a `[SQL] [Pandas]` toggle
+- Exercises tagged `["pandas"]` only (Pandas-specific) go straight to Python editor
+- Exercises tagged `["sql"]` only (DDL/DML, DuckDB-specific) have no toggle
 
-```typescript
-interface ExerciseProgress {
-  solved: boolean;
-  solvedModes?: CodingMode[];       // Track which modes the user solved with
-  lastAttempt?: string;
-  lastAttemptPandas?: string;       // Last Pandas attempt
-  attempts: number;
-  solvedAt?: string;
-}
-```
+### New Files
 
-An exercise counts as "solved" if solved in either mode. `solvedModes` tracks which modes were used (for badges/stats).
+| File | Description |
+|------|-------------|
+| `src/lib/pyodide/pyodide.worker.ts` | Web Worker: loads Pyodide, runs Python |
+| `src/lib/pyodide/pyodide-client.ts` | Singleton client (init, loadData, execute) |
+| `src/lib/pyodide/pandas-runner.ts` | DuckDB export → Pyodide bridge |
+| `src/components/python-editor.tsx` | CodeMirror 6 with Python language |
+| `src/components/coding-mode-toggle.tsx` | SQL/Pandas segmented toggle |
+| `src/app/(main)/roadmap/pandas/page.tsx` | Pandas roadmap page |
+| `roadmap/pandas.md` | Full Pandas roadmap spec document |
+| `src/exercises/pd-{N}-{slug}/exercise.ts` | Pandas exercises (ID prefix: `pd-`) |
+
+### Modified Files
+
+| File | Changes |
+|------|---------|
+| `src/lib/exercises/types.ts` | Add `CodingMode`, `supportedModes`, Pandas fields |
+| `src/lib/exercises/modules.ts` | Add `pandasTrack` |
+| `src/lib/exercises/index.ts` | Register Pandas exercises |
+| `src/lib/store/exercise-session.ts` | Add `codingMode`, `currentPandas` |
+| `src/lib/store/progress.ts` | Add `solvedModes`, `lastAttemptPandas` |
+| `src/app/exercise/[id]/page.tsx` | Mode toggle, conditional editor, dual execution path |
+| `src/app/(main)/page.tsx` | Add Pandas track card/link to home page |
+| `src/app/(main)/layout.tsx` | Add Pandas to navigation |
+| `src/lib/i18n/translations.ts` | Pandas-related translation keys |
+| `src/components/exercise-description.tsx` | Show available DataFrames in Pandas mode |
+| `package.json` | Add `pyodide`, `@codemirror/lang-python` |
+| `next.config.ts` | Pyodide WASM configuration |
 
 ---
 
-### Phase 3: UI Components
+## Shared Exercises Strategy
 
-**Step 3.1 — Mode toggle component (`src/components/mode-toggle.tsx`)**
+Some exercises can appear in **both SQL and Pandas roadmaps** (same data, same business question, different solution language):
 
-A segmented control / toggle button in the exercise header:
-- `[SQL] [Pandas]`
-- Defaults to SQL
-- When switching to Pandas for the first time: trigger Pyodide init (show loading indicator)
-- Persists choice in session store (not across exercises — each exercise starts on SQL)
+| SQL Module | Pandas Module | Shared Exercises |
+|------------|---------------|-----------------|
+| B1 SELECT Fundamentals | PB2 Filtering | Filter-based exercises |
+| B2 Aggregation | PB4 Basic Aggregation | GroupBy exercises |
+| B3 Basic Joins | PI1 Merge & Join | Join exercises |
+| I3 Window Ranking | PI4 Advanced GroupBy | Ranking exercises |
+| A1 Running Totals | PA1 Window Ops | cumsum/rolling exercises |
+| A2 Gaps & Islands | PA2 Consecutive Patterns | Streak exercises |
 
-**Step 3.2 — Python editor component (`src/components/python-editor.tsx`)**
+For shared exercises, `supportedModes: ["sql", "pandas"]` with both `solutionQuery` and `solutionPandas` populated.
 
-Same interface as `SqlEditor` but with Python language support:
-```typescript
-interface PythonEditorProps {
-  value: string;
-  onChange: (value: string) => void;
-  onRun: () => void;
-  isRunning: boolean;
-  isLoading: boolean;        // Pyodide still initializing
-}
-```
-
-Uses `@codemirror/lang-python` instead of `@codemirror/lang-sql`.
-
-Shows a loading overlay when Pyodide is initializing ("Loading Python runtime...").
-
-Includes a helper comment at the top:
-```python
-# Available DataFrames: orders, customers, products, ...
-# Your result must be stored in a variable named `result`
-# Example: result = orders.groupby('status').size().reset_index(name='count')
-```
-
-**Step 3.3 — Update exercise page (`src/app/exercise/[id]/page.tsx`)**
-
-- Add mode toggle to header (between title and nav buttons)
-- Conditionally render `SqlEditor` or `PythonEditor` based on `codingMode`
-- Route `handleRun` to either SQL execution or Pandas execution
-- Show "Pandas not available yet" if exercise has no `solutionPandas` (Phase 5)
-  - Actually, all exercises can be solved in Pandas since validation is data-based
-  - But solution/hint won't be available in Pandas mode for exercises without `solutionPandas`
-
-**Step 3.4 — Update solution panel (`src/components/solution-panel.tsx`)**
-
-- When in Pandas mode: show `solutionPandas` + `solutionPandasExplanation` if available
-- If not available: show a message "Pandas solution not yet available for this exercise. Try writing your own!"
-- Switch syntax highlighting between SQL and Python based on mode
-
-**Step 3.5 — Update exercise description (`src/components/exercise-description.tsx`)**
-
-- When in Pandas mode: show `pandasHint` if available, else fall back to generic hint
-- Add a "Available DataFrames" section showing table names and columns (parsed from schema)
-- Add a brief Pandas tips section for beginners
+Pandas-only exercises (e.g., method chaining, `.pipe()`, `astype('category')`) have `supportedModes: ["pandas"]`.
 
 ---
 
-### Phase 4: Execution & Validation Pipeline
+## Implementation Phases
 
-**Step 4.1 — Pandas execution in exercise page**
+### Phase 1: Infrastructure
+1. Install `pyodide` + `@codemirror/lang-python`
+2. Create Pyodide Web Worker + singleton client + runner
+3. Configure Next.js for Pyodide WASM
+4. Create `PythonEditor` component
 
-```typescript
-const handleRunPandas = useCallback(async () => {
-  if (!db || !exercise || isRunning) return;
-  setIsRunning(true);
+### Phase 2: Data Model & Track
+1. Update `Exercise` type with Pandas fields + `supportedModes`
+2. Define `pandasTrack` in `modules.ts`
+3. Update stores (exercise-session, progress)
+4. Add i18n keys
 
-  try {
-    // 1. Ensure Pyodide is ready
-    await initPyodide();
+### Phase 3: UI & Routing
+1. Create `/roadmap/pandas` page (copy pattern from DA/DE)
+2. Add `CodingModeToggle` component
+3. Update exercise page with dual execution
+4. Add Pandas to navigation + home page
 
-    // 2. For each test case:
-    for (const tc of exercise.testCases) {
-      // a. Reset DuckDB schema (+ setupSql if needed)
-      await resetSchema(db, exercise.schema);
-      if (tc.setupSql) await loadSchema(db, tc.setupSql);
+### Phase 4: Content — Beginner Exercises (~20)
+1. Create PB1 exercises (5): DataFrame basics
+2. Create PB2 exercises (6): filtering
+3. Create PB3 exercises (5): sorting
+4. Create PB4 exercises (5): basic aggregation
+5. Add `solutionPandas` to shared B1/B2 SQL exercises
 
-      // b. Export tables from DuckDB → JSON
-      // c. Load into Pandas
-      // d. Execute user code
-      // e. Validate result
-    }
-  } catch (err) { ... }
-}, [...]);
-```
-
-**Step 4.2 — Result conversion in worker**
-
-The worker extracts the `result` variable from Python:
-```python
-import json
-if isinstance(result, pd.DataFrame):
-    columns = result.columns.tolist()
-    rows = json.loads(result.to_json(orient='records', date_format='iso'))
-```
-
-This produces the same `{ columns, rows }` structure that `validateResult()` expects.
-
----
-
-### Phase 5: i18n Updates
-
-**Step 5.1 — Add translation keys (`src/lib/i18n/translations.ts`)**
-
-```typescript
-"exercise.modeSql": { en: "SQL", fr: "SQL" },
-"exercise.modePandas": { en: "Pandas", fr: "Pandas" },
-"exercise.pyodideLoading": { en: "Loading Python runtime...", fr: "Chargement de Python..." },
-"exercise.pyodideReady": { en: "Python ready", fr: "Python prêt" },
-"exercise.pandasSolutionNotAvailable": {
-  en: "Pandas solution not yet available for this exercise.",
-  fr: "La solution Pandas n'est pas encore disponible pour cet exercice."
-},
-"exercise.pandasResultVar": {
-  en: "Store your result in a variable named `result`",
-  fr: "Stockez votre résultat dans une variable nommée `result`"
-},
-"exercise.availableDataframes": {
-  en: "Available DataFrames",
-  fr: "DataFrames disponibles"
-},
-```
-
----
-
-### Phase 6: Add Pandas Solutions to Exercises (Incremental)
-
-This is a content task that can be done incrementally after the feature ships:
-
-- Start with 5-10 beginner exercises (B1-B2 modules) to validate the UX
-- Add `solutionPandas` + `solutionPandasExplanation` fields
-- Pattern: each SQL pattern maps to a Pandas equivalent:
-  - `SELECT ... WHERE` → `df[df['col'] > val]`
-  - `GROUP BY` → `df.groupby('col').agg(...)`
-  - `JOIN` → `pd.merge(df1, df2, on='key')`
-  - `WINDOW FUNCTIONS` → `df.groupby('col')['val'].transform('rank')`
-  - etc.
-
----
-
-## File Change Summary
-
-| File | Action | Description |
-|------|--------|-------------|
-| `package.json` | modify | Add `pyodide`, `@codemirror/lang-python` |
-| `next.config.ts` | modify | Add webpack config for Pyodide WASM files |
-| `src/lib/exercises/types.ts` | modify | Add `CodingMode`, Pandas fields to `Exercise` |
-| `src/lib/pyodide/pyodide.worker.ts` | **new** | Web Worker for Pyodide execution |
-| `src/lib/pyodide/pyodide-client.ts` | **new** | Singleton client (mirrors duckdb.ts) |
-| `src/lib/pyodide/pandas-runner.ts` | **new** | Orchestrates DuckDB export → Pandas execution |
-| `src/lib/store/exercise-session.ts` | modify | Add `codingMode`, `currentPandas`, pyodide state |
-| `src/lib/store/progress.ts` | modify | Add `solvedModes`, `lastAttemptPandas` |
-| `src/components/python-editor.tsx` | **new** | CodeMirror with Python language |
-| `src/components/mode-toggle.tsx` | **new** | SQL/Pandas segmented control |
-| `src/components/sql-editor.tsx` | minor | Extract shared editor logic if needed |
-| `src/components/exercise-description.tsx` | modify | Pandas hints, available DataFrames |
-| `src/components/solution-panel.tsx` | modify | Show Pandas solution when in Pandas mode |
-| `src/app/exercise/[id]/page.tsx` | modify | Mode toggle, conditional editor, dual execution |
-| `src/lib/i18n/translations.ts` | modify | Add Pandas-related translation keys |
+### Phase 5: Content — Intermediate + Advanced (~40)
+1. Create PI1-PI5 exercises
+2. Create PA1-PA4 exercises
+3. Add `solutionPandas` to more shared SQL exercises
 
 ---
 
 ## Risks & Mitigations
 
-| Risk | Impact | Mitigation |
-|------|--------|------------|
-| **Bundle size** (~17 MB for Pyodide+Pandas) | Slow first load for Pandas users | Lazy-load only when Pandas mode is selected; CDN caching |
-| **Pyodide init time** (5-15s first time) | UX feels slow | Show clear loading indicator; preload on toggle hover; cache in Service Worker |
-| **Next.js + Pyodide webpack conflicts** | Build failures | Use CDN loading (bypass webpack); `'use client'` directives |
-| **Data type mismatches** (Pandas vs DuckDB) | Validation failures on correct code | Normalize dates, numbers, NULLs in the worker before comparison |
-| **Python code security** | Users can run arbitrary Python | Pyodide runs in browser sandbox (same-origin); no server risk |
-| **Memory usage** | Large DataFrames + Pyodide overhead | Exercise schemas are small (10-30 rows); not a real concern |
-
----
-
-## Implementation Order (recommended)
-
-1. **Phase 1** (infrastructure) — Pyodide worker + client + runner
-2. **Phase 2** (data model) — Types + stores
-3. **Phase 3** (UI) — Editor + toggle + page integration
-4. **Phase 4** (execution) — Wire up Pandas execution pipeline
-5. **Phase 5** (i18n) — Translations (small, do alongside Phase 3)
-6. **Phase 6** (content) — Add Pandas solutions to exercises incrementally
+| Risk | Mitigation |
+|------|------------|
+| **17 MB Pyodide download** | Lazy-load only on Pandas mode; CDN caching; show loading progress |
+| **5-15s init time** | Loading indicator; preload on roadmap page hover; Service Worker cache |
+| **Next.js + Pyodide webpack** | CDN loading bypasses webpack; `'use client'` |
+| **Type mismatches (Pandas vs DuckDB)** | Normalize dates/numbers/NULLs in worker before validation |
+| **Scope creep** | Ship beginner modules first (Phase 4), iterate |

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useSyncExternalStore } from "react";
 import { useLocale, useLocaleStore } from "@/lib/i18n";
 
 interface ActivityGraphProps {
@@ -21,11 +21,11 @@ export function ActivityGraph({ activityDays, weeks: weeksProp }: ActivityGraphP
   const locale = useLocaleStore((s) => s.locale);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   useEffect(() => {
     const el = containerRef.current;

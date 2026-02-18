@@ -21,7 +21,7 @@ interface LevelSectionProps {
   companySuggestions?: CompanySuggestion[];
 }
 
-export function LevelSection({ level, modules, track, solvedIds, companySuggestions }: LevelSectionProps) {
+export function LevelSection({ level, modules, solvedIds, companySuggestions }: LevelSectionProps) {
   const { t } = useLocale();
 
   const levelConfig = {

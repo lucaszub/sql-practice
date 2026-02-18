@@ -47,13 +47,14 @@ jobs:
       group: deploy-production
       cancel-in-progress: false
     steps:
-      - name: Setup SSH
+      - name: Trigger deploy webhook
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-
-      - name: Deploy to VPS
-        run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} 'bash /root/deploy-sql-practice.sh'
+          STATUS=$(curl -s -o /tmp/deploy.log -w "%{http_code}" \
+            -X POST "https://datapratice.lzubdev.com/api/deploy" \
+            -H "Authorization: Bearer ${{ secrets.DEPLOY_WEBHOOK_SECRET }}" \
+            --max-time 300)
+          cat /tmp/deploy.log
+          if [ "$STATUS" != "200" ]; then
+            echo "Deploy failed with HTTP $STATUS"
+            exit 1
+          fi

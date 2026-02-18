@@ -1,255 +1,240 @@
-# Plan: Pandas Track — A Third Learning Path
+# Plan: Pandas Mode — Toggle on Home Page + Exercise Editor
 
-## Overview
+## Vue d'ensemble
 
-Add a **Pandas track** as a third career path alongside Data Analyst (SQL) and Data Engineer (SQL). Users get a dedicated `/roadmap/pandas` page with its own module progression from basic DataFrame operations to advanced analytics patterns. Exercises can be solved in **SQL or Pandas** — a toggle on each exercise lets users switch modes.
+Ajouter un **toggle SQL / Pandas** sur la page d'accueil (`/`). Quand l'utilisateur choisit Pandas, la liste des modules change pour montrer la progression Pandas (PB1 DataFrame Basics, PB2 Filtering, etc.). Quand il choisit SQL, il voit la vue actuelle (B1 SELECT, B2 GROUP BY, etc.).
 
-The Pandas roadmap teaches Pandas idioms in a structured way, not just "translate SQL to Pandas". It has its own logic: filtering → selection → groupby → merge → reshaping → window ops → performance.
+Sur la **page exercice**, les exercices partagés montrent un toggle SQL/Pandas pour choisir le mode d'édition.
 
----
-
-## Pandas Roadmap: Module Breakdown (~60 exercises)
-
-### Beginner (4 modules, ~20 exercises)
-
-#### PB1 — DataFrame Basics
-**Goal**: Load data, inspect structure, select columns.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Display first 10 orders | `df.head()`, `df.shape`, `df.info()` |
-| 2 | Select specific columns from customers table | `df[['col1', 'col2']]`, `df.col` |
-| 3 | Get unique product categories | `df['col'].unique()`, `df['col'].nunique()` |
-| 4 | Check data types and missing values | `df.dtypes`, `df.isna().sum()` |
-| 5 | Rename columns for a clean report | `df.rename(columns={...})` |
-
-**Skills**: `head`, `shape`, `columns`, `dtypes`, `info`, `unique`, `rename`
-**Icon**: `🐼`
-**Prerequisites**: none
-
-#### PB2 — Filtering & Boolean Indexing
-**Goal**: Filter rows using conditions, combine filters.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Find orders above $100 | `df[df['amount'] > 100]` |
-| 2 | Filter products in specific categories | `df[df['cat'].isin([...])]` |
-| 3 | Find orders in a date range | `df[(df['date'] >= ...) & (df['date'] <= ...)]` |
-| 4 | Search product names containing a keyword | `df[df['name'].str.contains('...')]` |
-| 5 | Combine multiple conditions (AND/OR) | `&`, `|`, `~` operators |
-| 6 | Find customers with missing email | `df[df['email'].isna()]` |
-
-**Skills**: boolean indexing, `isin`, `str.contains`, `isna`, `between`, `&`/`|`/`~`
-**Icon**: `🔍`
-**Prerequisites**: `PB1`
-
-#### PB3 — Sorting & Top-N
-**Goal**: Sort data, get top/bottom results.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Sort orders by date descending | `df.sort_values('col', ascending=False)` |
-| 2 | Top 5 customers by total spend | `df.nlargest(5, 'col')` |
-| 3 | Bottom 3 products by rating | `df.nsmallest(3, 'col')` |
-| 4 | Sort by multiple columns | `df.sort_values(['col1', 'col2'])` |
-| 5 | Reset index after sorting | `df.reset_index(drop=True)` |
-
-**Skills**: `sort_values`, `nlargest`, `nsmallest`, `head`, `reset_index`
-**Icon**: `📊`
-**Prerequisites**: `PB2`
-
-#### PB4 — Basic Aggregation
-**Goal**: Summarize data with groupby and aggregate functions.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Count orders per status | `df.groupby('status').size()` |
-| 2 | Total revenue per product category | `df.groupby('cat')['amount'].sum()` |
-| 3 | Average order value per customer | `df.groupby('customer_id')['amount'].mean()` |
-| 4 | Multiple aggregations at once | `df.groupby(...).agg({'col': ['sum', 'mean']})` |
-| 5 | Filter groups (equivalent of HAVING) | `grouped.filter(lambda g: g['amount'].sum() > 1000)` |
-
-**Skills**: `groupby`, `size`, `sum`, `mean`, `count`, `agg`, `filter`
-**Icon**: `📈`
-**Prerequisites**: `PB2`
+**On ne touche PAS aux roadmaps DA/DE.** Tout se passe sur la home page et la page exercice.
 
 ---
 
-### Intermediate (5 modules, ~25 exercises)
+## 1. UX de la page d'accueil
 
-#### PI1 — Merge & Join
-**Goal**: Combine DataFrames like SQL JOINs.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Join orders with customer names | `pd.merge(orders, customers, on='customer_id')` |
-| 2 | Left join to find customers without orders | `pd.merge(..., how='left')` + `isna()` |
-| 3 | Join three tables (orders + products + categories) | chained `merge()` |
-| 4 | Merge on different column names | `left_on=`, `right_on=` |
-| 5 | Anti-join: products never ordered | merge + filter `_merge == 'left_only'` with `indicator=True` |
-
-**Skills**: `pd.merge`, `how=`, `on=`, `left_on/right_on`, `indicator`, `suffixes`
-**Icon**: `🔗`
-**Prerequisites**: `PB4`
-
-#### PI2 — String & DateTime Operations
-**Goal**: Manipulate text and dates.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Extract month from order dates | `df['date'].dt.month` |
-| 2 | Truncate to monthly periods | `df['date'].dt.to_period('M')` |
-| 3 | Calculate days between order and delivery | `(df['delivery'] - df['order']).dt.days` |
-| 4 | Clean product names (lowercase, strip) | `df['name'].str.lower().str.strip()` |
-| 5 | Extract domain from email addresses | `df['email'].str.split('@').str[1]` |
-
-**Skills**: `.dt.`, `.str.`, `to_datetime`, `dt.days`, `str.split`, `str.extract`
-**Icon**: `📅`
-**Prerequisites**: `PB3`
-
-#### PI3 — Missing Data & Cleaning
-**Goal**: Handle NaN, fill values, deduplicate.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Fill missing prices with category average | `df.groupby('cat')['price'].transform(...)` + `fillna()` |
-| 2 | Drop rows where critical columns are null | `df.dropna(subset=['col1', 'col2'])` |
-| 3 | Remove duplicate customer records (keep latest) | `df.sort_values('date').drop_duplicates('email', keep='last')` |
-| 4 | Replace sentinel values (-1, 'N/A') with NaN | `df.replace({-1: np.nan, 'N/A': np.nan})` |
-| 5 | Forward-fill time series gaps | `df.set_index('date').resample('D').ffill()` |
-
-**Skills**: `fillna`, `dropna`, `drop_duplicates`, `replace`, `interpolate`, `ffill`
-**Icon**: `🧹`
-**Prerequisites**: `PB4`
-
-#### PI4 — Advanced GroupBy & Transform
-**Goal**: Complex aggregations, transform, apply.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Percentage of total per category | `transform('sum')` for group totals |
-| 2 | Rank products within each category | `df.groupby('cat')['sales'].rank(method='dense')` |
-| 3 | Custom aggregation function | `.agg(lambda x: ...)` or named agg |
-| 4 | Multiple named aggregations | `.agg(total=('amount', 'sum'), avg=('amount', 'mean'))` |
-| 5 | Cross-tabulation (counts by 2 dimensions) | `pd.crosstab(df['region'], df['status'])` |
-
-**Skills**: `transform`, `rank`, `apply`, named agg, `crosstab`, `value_counts`
-**Icon**: `🔢`
-**Prerequisites**: `PI1`, `PI3`
-
-#### PI5 — Reshaping: Pivot & Melt
-**Goal**: Transform data between wide and long formats.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Monthly revenue pivot table | `df.pivot_table(values='amount', index='month', columns='category')` |
-| 2 | Unpivot quarterly columns to rows | `pd.melt(df, id_vars=['product'], value_vars=['Q1','Q2','Q3','Q4'])` |
-| 3 | Multi-level pivot (region × product × metric) | `pivot_table` with `aggfunc` |
-| 4 | Stack/unstack multi-index | `df.set_index([...]).unstack()` |
-| 5 | Create a summary with margins (totals row/col) | `pivot_table(..., margins=True)` |
-
-**Skills**: `pivot_table`, `melt`, `stack`, `unstack`, `margins`, `aggfunc`
-**Icon**: `🔄`
-**Prerequisites**: `PI4`
-
----
-
-### Advanced (4 modules, ~18 exercises)
-
-#### PA1 — Window Operations (Rolling, Shift, Rank)
-**Goal**: Pandas equivalent of SQL window functions.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Running total of daily revenue | `df['amount'].cumsum()` |
-| 2 | 7-day moving average of orders | `df['orders'].rolling(7).mean()` |
-| 3 | Month-over-month growth rate | `df['revenue'].pct_change()` |
-| 4 | Previous month comparison with shift | `df['revenue'].shift(1)` |
-| 5 | Expanding max (all-time high) | `df['price'].expanding().max()` |
-
-**Skills**: `cumsum`, `rolling`, `expanding`, `shift`, `pct_change`, `rank`
-**Icon**: `📉`
-**Prerequisites**: `PI4`
-
-#### PA2 — Consecutive Patterns & Complex Logic
-**Goal**: Gaps, islands, streaks — the Pandas way.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Detect login streaks (consecutive days) | `diff() + cumsum()` grouping trick |
-| 2 | Find gaps in daily data | date range comparison |
-| 3 | Session detection (30-min inactivity gap) | `diff() > threshold` → `cumsum()` |
-| 4 | Longest winning streak per player | group consecutive, count max |
-
-**Skills**: `diff`, `cumsum`, `shift`, boolean grouping, gap detection
-**Icon**: `🏝️`
-**Prerequisites**: `PA1`
-
-#### PA3 — Multi-DataFrame & Concat
-**Goal**: Complex merges, concat, combine operations.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Combine monthly CSV files into one DataFrame | `pd.concat([df1, df2, df3])` |
-| 2 | Update master table with new data (upsert-style) | `combine_first` / index-based merge |
-| 3 | Compare two snapshots and find changes | merge with indicator + diff |
-| 4 | Merge-asof: match trades to closest quote | `pd.merge_asof(trades, quotes, on='timestamp')` |
-
-**Skills**: `pd.concat`, `combine_first`, `merge_asof`, `compare`, `indicator`
-**Icon**: `📦`
-**Prerequisites**: `PI1`
-
-#### PA4 — Performance & Method Chaining
-**Goal**: Write idiomatic, efficient Pandas code.
-| # | Exercise Idea | Key Concepts |
-|---|---------------|-------------|
-| 1 | Rewrite `.apply()` as vectorized operations | vectorized `np.where` vs `apply` |
-| 2 | Chain operations with `.pipe()` | `df.pipe(clean).pipe(transform).pipe(aggregate)` |
-| 3 | Use `.query()` for readable filters | `df.query('amount > 100 and status == "shipped"')` |
-| 4 | Optimize memory with category dtype | `df['status'].astype('category')` |
-| 5 | Method chaining: full ETL in one expression | `.assign().query().groupby().agg().reset_index()` |
-
-**Skills**: `pipe`, `assign`, `query`, `eval`, vectorization, `astype('category')`
-**Icon**: `⚡`
-**Prerequisites**: `PA1`, `PA3`
-
----
-
-## Roadmap Summary
-
+### Etat actuel
 ```
-                    PANDAS TRACK (~60 exercises)
-
- Beginner                Intermediate              Advanced
- ────────────            ──────────────            ───────────
- PB1 DataFrame Basics    PI1 Merge & Join          PA1 Window Ops
- PB2 Filtering           PI2 String & DateTime     PA2 Gaps & Islands
- PB3 Sorting & Top-N     PI3 Missing Data          PA3 Multi-DataFrame
- PB4 Basic Aggregation   PI4 Advanced GroupBy      PA4 Performance
-                          PI5 Pivot & Melt
-
- Prerequisite chain:
- PB1 → PB2 → PB3
-              PB2 → PB4 → PI1 → PI4 → PA1 → PA2
-                          PI1 → PA3 → PA4
-              PB3 → PI2
-              PB4 → PI3 → PI4 → PI5
+[Exercises]                    [All Levels ▼]
+┌─────────────────────────────────────────────┐
+│ B1 — SELECT Fundamentals          3/7  ███░ │
+│   11-select-where-basics     ✓              │
+│   12-in-between-filtering    ✓              │
+│   ...                                       │
+├─────────────────────────────────────────────┤
+│ B2 — Aggregation & GROUP BY       0/7  ░░░░ │
+│   ...                                       │
+└─────────────────────────────────────────────┘
 ```
 
+### Nouvel etat
+```
+[SQL]  [Pandas]                [All Levels ▼]     ← nouveau toggle
+┌─────────────────────────────────────────────┐
+│ PB1 — DataFrame Basics            0/5  ░░░░ │   ← modules Pandas
+│   pd-01-inspect-orders                      │
+│   pd-02-select-columns                      │
+│   ...                                       │
+├─────────────────────────────────────────────┤
+│ PB2 — Filtering & Boolean Indexing 0/6 ░░░░ │
+│   11-select-where-basics  ← partagé!        │
+│   pd-03-isin-filtering                      │
+│   ...                                       │
+└─────────────────────────────────────────────┘
+```
+
+Le toggle est un **segmented control** (meme pattern que le filtre de difficulte, mais avec 2 boutons). Il utilise un state React :
+
+```typescript
+const [codingMode, setCodingMode] = useState<"sql" | "pandas">("sql");
+
+// Switch modules based on mode
+const activeTrack = codingMode === "sql" ? dataAnalystTrack : pandasTrack;
+const modulesWithExercises = activeTrack.modules.map((mod) => { ... });
+```
+
+Le choix est persiste en localStorage (via le progress store ou un nouveau setting).
+
 ---
 
-## Architecture & Implementation
+## 2. Pandas Track — Modules & Exercices
 
-### Runtime: Pyodide (CPython in WebAssembly)
-- Official `pyodide` npm package (v0.29.3+)
-- **Lazy-loaded**: only when user opens the Pandas roadmap or toggles to Pandas mode
-- Runs in a **Web Worker** (mirrors DuckDB-WASM singleton pattern)
-- Pre-loads `pandas` + `numpy` (~17 MB first download, cached after)
+### Structure des modules
 
-### Data Flow
+13 modules, ~63 exercices (~30 nouveaux + ~33 partages avec SQL)
+
 ```
-Exercise schema (SQL) → DuckDB loads tables → Export as JSON
-    → Pyodide Web Worker → pd.DataFrame(json) per table
-    → User writes Pandas code → `result` variable extracted
-    → Convert to {columns, rows} → Same validator as SQL
+Beginner                 Intermediate                Advanced
+─────────────            ──────────────              ───────────
+PB1 DataFrame Basics     PI1 Merge & Join            PA1 Window Ops
+PB2 Filtering            PI2 String & DateTime       PA2 Consecutive Patterns
+PB3 Sorting & Top-N      PI3 Missing Data            PA3 Multi-DataFrame
+PB4 Basic Aggregation    PI4 Advanced GroupBy        PA4 Performance & Chaining
+                         PI5 Pivot & Melt
+
+Prerequisite chain :
+PB1 → PB2 → PB3
+        └→ PB4 → PI1 → PI4 → PA1 → PA2
+                  └→ PA3 ───→ PA4
+  PB3 → PI2
+  PB4 → PI3 → PI4 → PI5
 ```
 
-### Exercise Model Changes (`src/lib/exercises/types.ts`)
+### Detail des modules avec exercices
+
+#### PB1 — DataFrame Basics (5 exercices, tous NOUVEAUX)
+| ID | Titre | Concept | Business question |
+|----|-------|---------|-------------------|
+| `pd-01-inspect-orders` | Order Dataset Overview | `head`, `shape`, `info` | "Le PM demande combien de commandes sont dans le dataset et quelles colonnes sont dispo" |
+| `pd-02-select-columns` | Customer Contact List | `df[['col1','col2']]` | "L'equipe marketing a besoin de la liste nom + email des clients" |
+| `pd-03-unique-categories` | Product Category Inventory | `unique`, `nunique` | "Le merchandising veut savoir combien de categories produits existent" |
+| `pd-04-check-data-quality` | Data Quality Snapshot | `dtypes`, `isna().sum()` | "Avant l'analyse, verifie quelles colonnes ont des valeurs manquantes" |
+| `pd-05-rename-columns` | Clean Report Headers | `rename(columns=...)` | "Le rapport export a des noms de colonnes techniques, renomme-les pour le business" |
+
+#### PB2 — Filtering & Boolean Indexing (6 exercices, 4 PARTAGES + 2 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `11-select-where-basics` | PARTAGE | High-Value Orders Report | `df[df['amount'] > 100]` |
+| `12-in-between-filtering` | PARTAGE | Promotion-Eligible Products | `isin()` + `between()` |
+| `13-pattern-matching` | PARTAGE | Gmail Customers for Migration | `str.contains()` / `str.endswith()` |
+| `16-multiple-conditions` | PARTAGE | At-Risk Premium Customers | `&` / `|` / `~` operators |
+| `pd-06-date-range-filter` | NOUVEAU | Q4 Orders for Year-End Report | `df[(df['date'] >= ...) & (df['date'] <= ...)]` |
+| `pd-07-null-filter` | NOUVEAU | Customers Missing Phone Numbers | `df[df['phone'].isna()]` |
+
+#### PB3 — Sorting & Top-N (5 exercices, 2 PARTAGES + 3 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `14-sorting-results` | PARTAGE | Premium Catalog by Price | `sort_values(ascending=False)` |
+| `15-limit-offset` | PARTAGE | Recent Activity Widget | `sort_values() + head()` |
+| `pd-08-top-n` | NOUVEAU | Top 5 Revenue-Generating Products | `nlargest(5, 'revenue')` |
+| `pd-09-bottom-n` | NOUVEAU | Lowest Rated Products to Review | `nsmallest(3, 'rating')` |
+| `pd-10-multi-sort` | NOUVEAU | Employee Directory by Dept then Name | `sort_values(['dept', 'name'])` |
+
+#### PB4 — Basic Aggregation (5 exercices, 3 PARTAGES + 2 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `18-count-basics` | PARTAGE | Count Orders and Unique Customers | `len()`, `nunique()` |
+| `19-sum-avg-revenue` | PARTAGE | Monthly Revenue and Avg Order Value | `groupby().agg()` |
+| `20-min-max-prices` | PARTAGE | Cheapest & Most Expensive by Category | `groupby().agg(['min','max'])` |
+| `pd-11-value-counts` | NOUVEAU | Order Status Distribution | `value_counts()` |
+| `pd-12-group-filter` | NOUVEAU | High-Volume Product Categories | `groupby().filter(lambda ...)` |
+
+#### PI1 — Merge & Join (5 exercices, 4 PARTAGES + 1 NOUVEAU)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `25-inner-join-basics` | PARTAGE | Shipping Labels with Customer Names | `pd.merge(how='inner')` |
+| `27-left-join-basics` | PARTAGE | Customer Order Count Incl. Inactive | `merge(how='left')` |
+| `28-left-join-missing` | PARTAGE | Find Products Never Ordered | `merge(indicator=True)` anti-join |
+| `31-customer-summary` | PARTAGE | Customer Summary Report | `merge(how='left')` + `fillna(0)` |
+| `pd-13-merge-different-keys` | NOUVEAU | Match Employees with Departments | `merge(left_on=..., right_on=...)` |
+
+#### PI2 — String & DateTime Operations (5 exercices, tous NOUVEAUX)
+| ID | Titre | Concept |
+|----|-------|---------|
+| `pd-14-extract-month` | Monthly Sales Breakdown | `df['date'].dt.month` |
+| `pd-15-date-diff` | Average Delivery Time per Region | `(col1 - col2).dt.days` |
+| `pd-16-string-clean` | Clean Product Names for Catalog | `str.lower().str.strip()` |
+| `pd-17-string-extract` | Extract Email Domains | `str.split('@').str[1]` |
+| `pd-18-to-period` | Quarterly Revenue Report | `dt.to_period('Q')` |
+
+#### PI3 — Missing Data & Cleaning (5 exercices, 2 PARTAGES + 3 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `32-is-null-check` | PARTAGE | Flag Products Missing Descriptions | `df[df['col'].isna()]` |
+| `33-coalesce-defaults` | PARTAGE | Clean Up NULL Categories | `fillna('default')` |
+| `pd-19-fill-group-mean` | NOUVEAU | Fill Missing Prices with Category Average | `transform('mean') + fillna()` |
+| `pd-20-dedup-keep-latest` | NOUVEAU | Deduplicate Customer Records | `sort_values().drop_duplicates(keep='last')` |
+| `pd-21-replace-sentinels` | NOUVEAU | Replace Sentinel Values (-1, N/A) | `df.replace({-1: np.nan})` |
+
+#### PI4 — Advanced GroupBy & Transform (5 exercices, 2 PARTAGES + 3 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `01-top-n-per-group` | PARTAGE | Top N Per Group | `groupby().rank()` + filter |
+| `03-yoy-growth` | PARTAGE | Year-over-Year Growth | `pivot + pct_change()` |
+| `pd-22-pct-of-total` | NOUVEAU | Revenue Share per Category | `transform('sum')` for pct |
+| `pd-23-named-agg` | NOUVEAU | Sales KPI Summary per Region | `.agg(total=(...), avg=(...))` |
+| `pd-24-crosstab` | NOUVEAU | Order Status by Region | `pd.crosstab()` |
+
+#### PI5 — Reshaping: Pivot & Melt (5 exercices, tous NOUVEAUX)
+| ID | Titre | Concept |
+|----|-------|---------|
+| `pd-25-pivot-table` | Monthly Revenue by Category | `pivot_table(values, index, columns)` |
+| `pd-26-melt` | Unpivot Quarterly Metrics | `pd.melt(id_vars, value_vars)` |
+| `pd-27-pivot-margins` | Sales Summary with Totals | `pivot_table(margins=True)` |
+| `pd-28-unstack` | Flatten Multi-level GroupBy | `groupby([...]).unstack()` |
+| `pd-29-crosstab-pivot` | Customer Segment vs Product Affinity | `pd.crosstab(normalize='index')` |
+
+#### PA1 — Window Operations (5 exercices, 2 PARTAGES + 3 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `02-running-total` | PARTAGE | Running Total & Moving Average | `cumsum()`, `rolling(7).mean()` |
+| `09-consecutive-days` | PARTAGE | Consecutive Active Days | `diff() + cumsum()` |
+| `pd-30-pct-change` | NOUVEAU | Month-over-Month Growth Rate | `pct_change()` |
+| `pd-31-shift-compare` | NOUVEAU | Compare Each Month to Previous | `shift(1)` |
+| `pd-32-expanding-max` | NOUVEAU | All-Time Revenue High | `expanding().max()` |
+
+#### PA2 — Consecutive Patterns (4 exercices, 1 PARTAGE + 3 NOUVEAUX)
+| ID | Type | Titre | Concept |
+|----|------|-------|---------|
+| `04-gap-and-island` | PARTAGE | Login Streaks Detection | `diff() + cumsum()` grouping |
+| `pd-33-gap-detection` | NOUVEAU | Find Missing Days in Time Series | date range comparison |
+| `pd-34-session-detect` | NOUVEAU | Session Detection (30min gap) | `diff() > threshold + cumsum()` |
+| `pd-35-longest-streak` | NOUVEAU | Longest Winning Streak per Player | group consecutive + max |
+
+#### PA3 — Multi-DataFrame & Concat (4 exercices, tous NOUVEAUX)
+| ID | Titre | Concept |
+|----|-------|---------|
+| `pd-36-concat-files` | Combine Monthly Reports | `pd.concat([df1, df2])` |
+| `pd-37-combine-first` | Update Master with New Data | `combine_first()` |
+| `pd-38-snapshot-diff` | Find Changes Between Snapshots | `merge(indicator=True)` + diff |
+| `pd-39-merge-asof` | Match Trades to Nearest Quote | `pd.merge_asof(on='timestamp')` |
+
+#### PA4 — Performance & Method Chaining (5 exercices, tous NOUVEAUX)
+| ID | Titre | Concept |
+|----|-------|---------|
+| `pd-40-vectorize` | Replace apply() with Vectorized Ops | `np.where` vs `apply` |
+| `pd-41-pipe` | Build ETL Pipeline with pipe() | `df.pipe(f1).pipe(f2)` |
+| `pd-42-query` | Readable Filters with query() | `df.query('amount > 100')` |
+| `pd-43-assign-chain` | Method Chaining: Clean → Transform → Aggregate | `.assign().query().groupby().agg()` |
+| `pd-44-category-dtype` | Optimize Memory with Categories | `astype('category')` |
+
+---
+
+### Comptage final
+
+| Type | Nombre |
+|------|--------|
+| Exercices NOUVEAUX (Pandas-only) | 30 |
+| Exercices PARTAGES (SQL + Pandas) | 23 |
+| **Total track Pandas** | **53** |
+
+Les 23 exercices partages reutilisent les memes donnees/schema/test cases. Seuls `solutionPandas` et `solutionPandasExplanation` sont ajoutes.
+
+---
+
+## 3. Architecture technique
+
+### Pyodide (Python dans le navigateur)
+- Package npm `pyodide` (v0.29.3+)
+- **Lazy-load** : charge uniquement quand l'user selectionne Pandas (~17 MB, cached apres)
+- **Web Worker** : meme pattern singleton que `src/lib/db/duckdb.ts`
+- Pre-charge `pandas` + `numpy`
+
+### Data flow
+```
+Schema SQL (DuckDB) → export JSON par table
+    → Pyodide Worker → pd.DataFrame(json) par table
+    → User ecrit du Pandas → variable `result` extraite
+    → Converti en {columns, rows} → meme validateur que SQL
+```
+
+### Changements type Exercise (`src/lib/exercises/types.ts`)
 ```typescript
 export type CodingMode = "sql" | "pandas";
 
 export interface Exercise {
-  // ... existing fields ...
-  supportedModes?: CodingMode[];           // default: ["sql"], pandas exercises: ["pandas"] or ["sql", "pandas"]
-  solutionPandas?: string;                 // Reference Pandas solution
+  // champs existants inchanges...
+  supportedModes?: CodingMode[];  // default ["sql"], shared: ["sql","pandas"], pandas-only: ["pandas"]
+  solutionPandas?: string;
   solutionPandasExplanation?: string;
   solutionPandasExplanationFr?: string;
   pandasHint?: string;
@@ -257,116 +242,128 @@ export interface Exercise {
 }
 ```
 
-### New Track Definition (`src/lib/exercises/modules.ts`)
+### Nouveau track dans `modules.ts`
 ```typescript
 export const pandasTrack: Track = {
   id: "pandas",
   name: "Pandas",
-  description: "Master data manipulation with Python Pandas: from DataFrame basics to advanced analytics patterns. ~60 exercises across 13 modules.",
+  description: "Master data manipulation with Python Pandas...",
   modules: [
-    { id: "PB1", name: "DataFrame Basics", level: "beginner", ... },
-    { id: "PB2", name: "Filtering & Boolean Indexing", level: "beginner", ... },
+    { id: "PB1", name: "DataFrame Basics", level: "beginner",
+      exerciseIds: ["pd-01-inspect-orders", "pd-02-select-columns", ...],
+      skills: ["head", "shape", "columns", "dtypes", "rename"],
+      icon: "🐼" },
+    { id: "PB2", name: "Filtering & Boolean Indexing", level: "beginner",
+      exerciseIds: ["11-select-where-basics", "12-in-between-filtering", "pd-06-date-range-filter", ...],
+      // ↑ melange d'exercices partages et nouveaux
+      skills: ["boolean indexing", "isin", "str.contains", "isna"],
+      icon: "🔍", prerequisites: ["PB1"] },
     // ...
   ],
 };
 ```
 
-### Exercise Page: Mode Toggle
-- Exercises tagged `["sql", "pandas"]` show a `[SQL] [Pandas]` toggle
-- Exercises tagged `["pandas"]` only (Pandas-specific) go straight to Python editor
-- Exercises tagged `["sql"]` only (DDL/DML, DuckDB-specific) have no toggle
+### Page d'accueil (`src/app/(main)/page.tsx`)
+```typescript
+// Nouveau state
+const [codingMode, setCodingMode] = useState<"sql" | "pandas">("sql");
 
-### New Files
+// Switch le track selon le mode
+const activeTrack = codingMode === "sql" ? dataAnalystTrack : pandasTrack;
 
-| File | Description |
-|------|-------------|
-| `src/lib/pyodide/pyodide.worker.ts` | Web Worker: loads Pyodide, runs Python |
+// Le reste du code (modules, filters, render) ne change pas — il utilise juste activeTrack
+const modulesWithExercises = activeTrack.modules.map((mod) => { ... });
+```
+
+Le toggle est un composant segmented control juste avant le filtre de difficulte :
+```tsx
+<div className="flex items-center justify-between">
+  <h2 className="text-lg font-semibold">{t("home.exercises")}</h2>
+  <div className="flex items-center gap-2">
+    <CodingModeToggle value={codingMode} onChange={setCodingMode} />
+    <Select value={difficultyFilter} onValueChange={setDifficultyFilter}>
+      ...
+    </Select>
+  </div>
+</div>
+```
+
+### Page exercice (`src/app/exercise/[id]/page.tsx`)
+- Si `exercise.supportedModes` inclut les deux : afficher toggle SQL/Pandas
+- Si `["pandas"]` seulement : editeur Python directement
+- Si `["sql"]` seulement (defaut) : comportement actuel, pas de toggle
+- L'editeur Python utilise `@codemirror/lang-python`
+- Le `handleRun` route vers DuckDB (SQL) ou Pyodide (Pandas)
+
+---
+
+## 4. Fichiers a creer
+
+| Fichier | Description |
+|---------|-------------|
+| `src/lib/pyodide/pyodide.worker.ts` | Web Worker : charge Pyodide, execute Python |
 | `src/lib/pyodide/pyodide-client.ts` | Singleton client (init, loadData, execute) |
-| `src/lib/pyodide/pandas-runner.ts` | DuckDB export → Pyodide bridge |
-| `src/components/python-editor.tsx` | CodeMirror 6 with Python language |
-| `src/components/coding-mode-toggle.tsx` | SQL/Pandas segmented toggle |
-| `src/app/(main)/roadmap/pandas/page.tsx` | Pandas roadmap page |
-| `roadmap/pandas.md` | Full Pandas roadmap spec document |
-| `src/exercises/pd-{N}-{slug}/exercise.ts` | Pandas exercises (ID prefix: `pd-`) |
+| `src/lib/pyodide/pandas-runner.ts` | Bridge DuckDB export → Pyodide execution |
+| `src/components/python-editor.tsx` | CodeMirror 6 avec support Python |
+| `src/components/coding-mode-toggle.tsx` | Toggle segmented SQL/Pandas |
+| `src/exercises/pd-{NN}-{slug}/exercise.ts` | ~30 nouveaux exercices Pandas |
 
-### Modified Files
+## 5. Fichiers a modifier
 
-| File | Changes |
-|------|---------|
-| `src/lib/exercises/types.ts` | Add `CodingMode`, `supportedModes`, Pandas fields |
-| `src/lib/exercises/modules.ts` | Add `pandasTrack` |
-| `src/lib/exercises/index.ts` | Register Pandas exercises |
-| `src/lib/store/exercise-session.ts` | Add `codingMode`, `currentPandas` |
-| `src/lib/store/progress.ts` | Add `solvedModes`, `lastAttemptPandas` |
-| `src/app/exercise/[id]/page.tsx` | Mode toggle, conditional editor, dual execution path |
-| `src/app/(main)/page.tsx` | Add Pandas track card/link to home page |
-| `src/app/(main)/layout.tsx` | Add Pandas to navigation |
-| `src/lib/i18n/translations.ts` | Pandas-related translation keys |
-| `src/components/exercise-description.tsx` | Show available DataFrames in Pandas mode |
-| `package.json` | Add `pyodide`, `@codemirror/lang-python` |
-| `next.config.ts` | Pyodide WASM configuration |
+| Fichier | Changement |
+|---------|------------|
+| `src/app/(main)/page.tsx` | Toggle SQL/Pandas, switch `activeTrack` |
+| `src/app/exercise/[id]/page.tsx` | Toggle mode, double execution (SQL ou Pandas) |
+| `src/lib/exercises/types.ts` | `CodingMode`, `supportedModes`, champs Pandas |
+| `src/lib/exercises/modules.ts` | Ajouter `pandasTrack` |
+| `src/lib/exercises/index.ts` | Enregistrer les 30 nouveaux exercices |
+| `src/lib/store/exercise-session.ts` | `codingMode`, `currentPandas` |
+| `src/lib/store/progress.ts` | `solvedModes`, `lastAttemptPandas` |
+| `src/lib/i18n/translations.ts` | Cles Pandas |
+| `src/components/exercise-description.tsx` | Afficher DataFrames dispo en mode Pandas |
+| `package.json` | `pyodide`, `@codemirror/lang-python` |
+| `next.config.ts` | Config Pyodide WASM |
+| 23 exercices existants | Ajouter `supportedModes`, `solutionPandas` |
 
 ---
 
-## Shared Exercises Strategy
+## 6. Phases d'implementation
 
-Some exercises can appear in **both SQL and Pandas roadmaps** (same data, same business question, different solution language):
+### Phase 1 : Infrastructure Pyodide
+1. `pnpm add pyodide @codemirror/lang-python`
+2. Creer Web Worker + singleton client + runner
+3. Config Next.js pour Pyodide WASM
+4. Creer `PythonEditor` component
 
-| SQL Module | Pandas Module | Shared Exercises |
-|------------|---------------|-----------------|
-| B1 SELECT Fundamentals | PB2 Filtering | Filter-based exercises |
-| B2 Aggregation | PB4 Basic Aggregation | GroupBy exercises |
-| B3 Basic Joins | PI1 Merge & Join | Join exercises |
-| I3 Window Ranking | PI4 Advanced GroupBy | Ranking exercises |
-| A1 Running Totals | PA1 Window Ops | cumsum/rolling exercises |
-| A2 Gaps & Islands | PA2 Consecutive Patterns | Streak exercises |
+### Phase 2 : Data model + Track
+1. Modifier `types.ts` (CodingMode, supportedModes, champs Pandas)
+2. Definir `pandasTrack` dans `modules.ts`
+3. Modifier stores (exercise-session, progress)
+4. Ajouter cles i18n
 
-For shared exercises, `supportedModes: ["sql", "pandas"]` with both `solutionQuery` and `solutionPandas` populated.
+### Phase 3 : UI Home page + Exercise page
+1. Ajouter `CodingModeToggle` sur la home page
+2. Wirer le switch `activeTrack` basé sur le mode
+3. Ajouter toggle + execution Pandas sur la page exercice
 
-Pandas-only exercises (e.g., method chaining, `.pipe()`, `astype('category')`) have `supportedModes: ["pandas"]`.
+### Phase 4 : Exercices Beginner (~21 exercices)
+1. Creer PB1 (5 nouveaux)
+2. Creer PB2 (2 nouveaux + 4 partages avec solutionPandas)
+3. Creer PB3 (3 nouveaux + 2 partages)
+4. Creer PB4 (2 nouveaux + 3 partages)
 
----
-
-## Implementation Phases
-
-### Phase 1: Infrastructure
-1. Install `pyodide` + `@codemirror/lang-python`
-2. Create Pyodide Web Worker + singleton client + runner
-3. Configure Next.js for Pyodide WASM
-4. Create `PythonEditor` component
-
-### Phase 2: Data Model & Track
-1. Update `Exercise` type with Pandas fields + `supportedModes`
-2. Define `pandasTrack` in `modules.ts`
-3. Update stores (exercise-session, progress)
-4. Add i18n keys
-
-### Phase 3: UI & Routing
-1. Create `/roadmap/pandas` page (copy pattern from DA/DE)
-2. Add `CodingModeToggle` component
-3. Update exercise page with dual execution
-4. Add Pandas to navigation + home page
-
-### Phase 4: Content — Beginner Exercises (~20)
-1. Create PB1 exercises (5): DataFrame basics
-2. Create PB2 exercises (6): filtering
-3. Create PB3 exercises (5): sorting
-4. Create PB4 exercises (5): basic aggregation
-5. Add `solutionPandas` to shared B1/B2 SQL exercises
-
-### Phase 5: Content — Intermediate + Advanced (~40)
-1. Create PI1-PI5 exercises
-2. Create PA1-PA4 exercises
-3. Add `solutionPandas` to more shared SQL exercises
+### Phase 5 : Exercices Intermediate + Advanced (~32 exercices)
+1. Creer PI1-PI5, PA1-PA4
+2. Ajouter solutionPandas aux exercices partages restants
 
 ---
 
-## Risks & Mitigations
+## 7. Risques & mitigations
 
-| Risk | Mitigation |
-|------|------------|
-| **17 MB Pyodide download** | Lazy-load only on Pandas mode; CDN caching; show loading progress |
-| **5-15s init time** | Loading indicator; preload on roadmap page hover; Service Worker cache |
-| **Next.js + Pyodide webpack** | CDN loading bypasses webpack; `'use client'` |
-| **Type mismatches (Pandas vs DuckDB)** | Normalize dates/numbers/NULLs in worker before validation |
-| **Scope creep** | Ship beginner modules first (Phase 4), iterate |
+| Risque | Mitigation |
+|--------|------------|
+| 17 MB Pyodide | Lazy-load, CDN cache, progress indicator |
+| 5-15s init time | Loading overlay, preload on hover, Service Worker |
+| Next.js + Pyodide webpack | CDN loading, `'use client'` |
+| Types mismatch Pandas vs DuckDB | Normaliser dates/numbers/NULLs dans le worker |
+| Scope creep | Phase 4 (beginner) d'abord, iterer |

@@ -19,16 +19,15 @@ export function useTheme() {
   return useContext(ThemeContext);
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("dark");
-  const locale = useLocaleStore((s) => s.locale);
+function getInitialTheme(): Theme {
+  if (typeof window === "undefined") return "dark";
+  const stored = localStorage.getItem("pd-theme");
+  return stored === "light" || stored === "dark" ? stored : "dark";
+}
 
-  useEffect(() => {
-    const stored = localStorage.getItem("pd-theme") as Theme | null;
-    if (stored === "light" || stored === "dark") {
-      setTheme(stored);
-    }
-  }, []);
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const locale = useLocaleStore((s) => s.locale);
 
   useEffect(() => {
     const root = document.documentElement;

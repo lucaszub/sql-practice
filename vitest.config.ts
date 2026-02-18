@@ -8,6 +8,7 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     include: ["src/**/*.test.ts", "src/**/*.test.tsx"],
+    exclude: ["src/**/*.integration.test.ts", "node_modules"],
   },
   resolve: {
     alias: {

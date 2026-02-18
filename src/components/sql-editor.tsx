@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useCallback } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { sql, PostgreSQL } from "@codemirror/lang-sql";
 import { oneDark } from "@codemirror/theme-one-dark";
@@ -8,6 +8,8 @@ import { keymap } from "@codemirror/view";
 import { Button } from "@/components/ui/button";
 import { Send, Loader2 } from "lucide-react";
 import { useLocale } from "@/lib/i18n";
+
+const sqlExtension = sql({ dialect: PostgreSQL });
 
 interface SqlEditorProps {
   value: string;
@@ -19,24 +21,21 @@ interface SqlEditorProps {
 export function SqlEditor({ value, onChange, onRun, isRunning }: SqlEditorProps) {
   const { t } = useLocale();
 
-  const onRunRef = useRef(onRun);
-  onRunRef.current = onRun;
-
-  const extensions = useMemo(
+  const getExtensions = useCallback(
     () => [
-      sql({ dialect: PostgreSQL }),
+      sqlExtension,
       keymap.of([
         {
           key: "Ctrl-Enter",
           mac: "Cmd-Enter",
           run: () => {
-            onRunRef.current();
+            onRun();
             return true;
           },
         },
       ]),
     ],
-    []
+    [onRun]
   );
 
   return (
@@ -56,7 +55,7 @@ export function SqlEditor({ value, onChange, onRun, isRunning }: SqlEditorProps)
         <CodeMirror
           value={value}
           onChange={onChange}
-          extensions={extensions}
+          extensions={getExtensions()}
           theme={oneDark}
           height="100%"
           className="h-full"

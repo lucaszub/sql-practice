@@ -15,9 +15,10 @@ import { useLocalizedExercise, useLocale } from "@/lib/i18n";
 
 interface ExerciseDescriptionProps {
   exercise: Exercise;
+  allowSolution?: boolean;
 }
 
-export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
+export function ExerciseDescription({ exercise, allowSolution = true }: ExerciseDescriptionProps) {
   const [showHint, setShowHint] = useState(false);
   const localized = useLocalizedExercise(exercise);
   const { t } = useLocale();
@@ -54,10 +55,12 @@ export function ExerciseDescription({ exercise }: ExerciseDescriptionProps) {
           </div>
         )}
 
-        <SolutionPanel
-          solutionQuery={exercise.solutionQuery}
-          solutionExplanation={localized.localizedSolutionExplanation}
-        />
+        {allowSolution && (
+          <SolutionPanel
+            solutionQuery={exercise.solutionQuery}
+            solutionExplanation={localized.localizedSolutionExplanation}
+          />
+        )}
       </div>
     </ScrollArea>
   );

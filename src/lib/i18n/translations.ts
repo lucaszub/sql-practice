@@ -5,7 +5,7 @@ export const translations = {
   "nav.exercises": { en: "Exercises", fr: "Exercices" },
   "nav.daRoadmap": { en: "DA Roadmap", fr: "Parcours DA" },
   "nav.deRoadmap": { en: "DE Roadmap", fr: "Parcours DE" },
-  "nav.company": { en: "Companies", fr: "Entreprises" },
+  "nav.company": { en: "Real-World Cases", fr: "Cas Concrets" },
   "nav.back": { en: "Back", fr: "Retour" },
   "nav.prev": { en: "Prev", fr: "Prec" },
   "nav.next": { en: "Next", fr: "Suiv" },
@@ -34,15 +34,15 @@ export const translations = {
   },
   "home.comingSoon": { en: "Coming Soon", fr: "Bientot" },
   "home.companyCta": {
-    en: "New: Practice SQL in realistic company scenarios",
-    fr: "Nouveau : Pratiquez le SQL dans des scenarios d'entreprise realistes",
+    en: "New: Solve SQL challenges based on real business scenarios",
+    fr: "Nouveau : Resolvez des defis SQL bases sur des scenarios business reels",
   },
 
   // Companies page
-  "companies.title": { en: "Choose your company", fr: "Choisis ton entreprise" },
+  "companies.title": { en: "Pick a business, start querying", fr: "Choisis un cas, lance tes requetes" },
   "companies.subtitle": {
-    en: "Each company has its own data, stakeholders, and business questions. Pick one and start querying.",
-    fr: "Chaque entreprise a ses propres donnees, interlocuteurs et questions business. Choisis-en une et commence a requeter.",
+    en: "Each case drops you into a real company with its own data, stakeholders, and business questions.",
+    fr: "Chaque cas te plonge dans une vraie entreprise avec ses propres donnees, interlocuteurs et questions business.",
   },
   "companies.comingSoon": { en: "Coming soon", fr: "Bientot disponible" },
 
@@ -133,8 +133,8 @@ export const translations = {
 
   // Roadmap company CTA
   "roadmap.companyCta": {
-    en: "Put your skills to the test on a real company!",
-    fr: "Mets tes competences a l'epreuve sur une vraie entreprise !",
+    en: "Ready for the real thing? Try a business case!",
+    fr: "Pret pour du concret ? Lance-toi sur un cas business !",
   },
   "roadmap.tryCompany": { en: "Try", fr: "Essayer" },
 

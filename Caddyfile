@@ -1,5 +1,6 @@
-# Replace practicedata.example.com with your actual domain
-{$DOMAIN:practicedata.example.com} {
+# Domain configured via DOMAIN env var or .env file
+# Default: datapratice.lzubdev.com
+{$DOMAIN:datapratice.lzubdev.com} {
     reverse_proxy nextjs:3000
     encode gzip zstd
 

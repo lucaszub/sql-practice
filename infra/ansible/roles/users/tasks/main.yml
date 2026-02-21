@@ -3,16 +3,14 @@
   user:
     name: "{{ deploy_user }}"
     shell: /bin/bash
-    groups: sudo
+    groups: docker
     append: true
     create_home: true
 
-- name: Allow deploy user passwordless sudo
-  copy:
-    content: "{{ deploy_user }} ALL=(ALL) NOPASSWD:ALL\n"
-    dest: "/etc/sudoers.d/{{ deploy_user }}"
-    mode: "0440"
-    validate: "visudo -cf %s"
+- name: Remove NOPASSWD:ALL sudo if present
+  file:
+    path: "/etc/sudoers.d/{{ deploy_user }}"
+    state: absent
 
 - name: Create .ssh directory for deploy user
   file:

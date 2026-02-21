@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+*.md
+.env*
+.claude
+vitest*.config.*
+src/**/*.test.ts
+src/**/*.test.tsx
+coverage
+.vercel
+.DS_Store
+infra
+roadmap

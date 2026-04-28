@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sun, Moon, Languages, Github } from "lucide-react";
 import { useTheme } from "@/components/theme-provider";
@@ -9,6 +10,8 @@ import { Button } from "@/components/ui/button";
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   const { theme, toggle: toggleTheme } = useTheme();
   const { locale, toggle: toggleLocale, t } = useLocale();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -37,10 +40,10 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
               <Languages className="h-4 w-4" />
             </Button>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={toggleTheme}>
-              {theme === "dark" ? (
-                <Sun className="h-4 w-4" />
+              {mounted ? (
+                theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />
               ) : (
-                <Moon className="h-4 w-4" />
+                <span className="h-4 w-4" />
               )}
             </Button>
           </div>

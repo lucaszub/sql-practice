@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 duckdb_cli-linux-amd64.zip
+
+# npm lockfile (project uses pnpm)
+package-lock.json

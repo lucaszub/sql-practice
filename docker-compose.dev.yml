@@ -1,0 +1,15 @@
+services:
+  nextjs:
+    restart: unless-stopped
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm config set strict-ssl false && npm install && npm run dev"
+    network_mode: host
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_TELEMETRY_DISABLED=1
+      - NODE_TLS_REJECT_UNAUTHORIZED=0

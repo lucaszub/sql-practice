@@ -121,6 +121,11 @@ import { exercise as ex118 } from "@/exercises/118-growth-target-tracking/exerci
 import { exercise as ex119 } from "@/exercises/119-island-grouping/exercise";
 import { exercise as ex120 } from "@/exercises/120-gap-detection/exercise";
 import { exercise as ex121 } from "@/exercises/121-session-detection/exercise";
+import { exercise as ex122 } from "@/exercises/122-campaign-region-gaps/exercise";
+import { exercise as ex123 } from "@/exercises/123-pro-feature-adoption-gaps/exercise";
+import { exercise as ex124 } from "@/exercises/124-shift-coverage-gaps/exercise";
+import { exercise as ex125 } from "@/exercises/125-store-category-promo-gaps/exercise";
+import { exercise as ex126 } from "@/exercises/126-monthly-account-gaps/exercise";
 
 export const exercises: Exercise[] = [
   ex01, ex02, ex03, ex04, ex05,
@@ -148,6 +153,7 @@ export const exercises: Exercise[] = [
   ex107, ex108, ex109, ex110, ex111,
   ex112, ex113, ex114, ex115, ex116,
   ex117, ex118, ex119, ex120, ex121,
+  ex122, ex123, ex124, ex125, ex126,
 ];
 
 export function getExercise(id: string): Exercise | undefined {
